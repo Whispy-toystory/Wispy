@@ -1,15 +1,20 @@
-import { TextInput, View } from "react-native";
-
+import { TextInput, View, StyleSheet } from "react-native";
 import PrimaryButton from "../components/PrimaryButton";
 
 function GreetingScreen() {
     return (
-    <View>
-        <TextInput />
+    <View style={styles.inputContainer}>
         <PrimaryButton>Next</PrimaryButton>
-        <PrimaryButton>Call</PrimaryButton>
     </View>
     );
 }
 
 export default GreetingScreen;
+
+const styles = StyleSheet.create({
+    inputContainer: {
+        marginTop: 700,
+        padding: 24,
+        backgroundColor: '#72063c'
+    }
+});
