@@ -1,9 +1,11 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Colors from '../constants/colors';
+import Fonts from '../constants/fonts';
 
 function PrimaryButton({
   children,
   onPress = () => {},
-  textColor = '#009DFF',
+  textColor = Colors.wispyBlack,
   style = {},
   textStyle = {}
 }) {
@@ -17,7 +19,7 @@ function PrimaryButton({
         onPress={onPress}
         android_ripple={{ color: '#8F8311' }}
       >
-        <Text style={[styles.buttonText, { color: textColor }, textStyle]}>
+        <Text style={[styles.buttonText, { color: textColor }]}>
           {children}
         </Text>
       </Pressable>
@@ -33,13 +35,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonInnerContainer: {
-    backgroundColor: "#F1E150",
+    backgroundColor: Colors.wispyButtonYellow,
     paddingVertical: 15,
     paddingHorizontal: 138,
     elevation: 2,
   },
   buttonText: {
     textAlign: 'center',
+    fontFamily: Fonts.suitHeavy,
+    fontSize: 22
   },
   pressed: {
     opacity: 0.75,

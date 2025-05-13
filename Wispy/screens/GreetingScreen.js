@@ -1,12 +1,13 @@
 import { View, StyleSheet } from "react-native";
 import PrimaryButton from "../components/PrimaryButton";
+import Colors from "../constants/colors";
 
 function GreetingScreen() {
   return (
     <View style={styles.inputContainer}>
       <PrimaryButton
         onPress={() => console.log('Next pressed')}
-        textColor="#E55C5F"
+        textColor={Colors.wispyBlue}
       >
         Next
       </PrimaryButton>

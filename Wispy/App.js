@@ -1,8 +1,14 @@
-import { StyleSheet } from 'react-native';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
+import { fontAssets } from './constants/fonts';
 import GreetingScreen from './screens/GreetingScreen';
 
 export default function App() {
-  return <GreetingScreen />;
-}  
+  const [fontsLoaded] = useFonts(fontAssets);
 
-const styles = StyleSheet.create({});
+  if (!fontsLoaded) return <AppLoading />;
+
+  return <GreetingScreen />;
+}
+
+console.log('fontAssets:', fontAssets);
