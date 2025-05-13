@@ -1,20 +1,25 @@
-import { TextInput, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import PrimaryButton from "../components/PrimaryButton";
 
 function GreetingScreen() {
-    return (
+  return (
     <View style={styles.inputContainer}>
-        <PrimaryButton>Next</PrimaryButton>
+      <PrimaryButton
+        onPress={() => console.log('Next pressed')}
+        textColor="#E55C5F"
+      >
+        Next
+      </PrimaryButton>
     </View>
-    );
+  );
 }
 
 export default GreetingScreen;
 
 const styles = StyleSheet.create({
-    inputContainer: {
-        marginTop: 700,
-        padding: 24,
-        backgroundColor: '#72063c'
-    }
+  inputContainer: {
+    marginTop: 700,
+    padding: 24,
+    backgroundColor: '#72063c',
+  },
 });
