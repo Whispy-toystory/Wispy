@@ -1,24 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
+import { fontAssets } from './constants/fonts';
+import GreetingScreen from './screens/GreetingScreen';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <View>
-        <Text>Hello</Text>
-        </View>
-      <Text>World!</Text>
-      <Text>Wispy!</Text>
-      <Button title = "Ready?" />
-    </View>
-  );
+  const [fontsLoaded] = useFonts(fontAssets);
+
+  if (!fontsLoaded) return <AppLoading />;
+
+  return <GreetingScreen />;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+console.log('fontAssets:', fontAssets);
