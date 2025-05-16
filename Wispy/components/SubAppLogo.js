@@ -31,7 +31,6 @@ function SubAppLogo({
 const styles = StyleSheet.create({
   logoBase: {
     position: 'absolute', // 다른 요소와 관계없이 화면 기준으로 위치
-    backgroundColor: 'rgba(255,255,0,0.2)'
   },
 });
 

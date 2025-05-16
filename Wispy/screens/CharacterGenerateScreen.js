@@ -25,8 +25,6 @@ export function normalize(size) {
     return Math.round(PixelRatio.roundToNearestPixel(newSize));
   } else {
     return Math.round(PixelRatio.roundToNearestPixel(newSize));
-    // 또는 Android에서 약간의 오프셋을 줄 수 있습니다.
-    // return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
   }
 }
 
@@ -85,7 +83,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     flex: 0.2,
     paddingHorizontal: 15,
-    backgroundColor: 'rgba(255,0,0,0.2)',
   },
   contentContainer: { 
     flex: 1,
@@ -94,7 +91,6 @@ const styles = StyleSheet.create({
     flex: 2, 
     justifyContent: 'center',
     alignItems: 'center',
-    // marginBottom: 10,
   },
   mainText: {
     textAlign: 'center',
@@ -107,14 +103,12 @@ const styles = StyleSheet.create({
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'rgba(0,0,0,0.1)', // 영역 확인용
   },
   buttonContainer: {
     paddingTop: 10,
     justifyContent: 'center',
     paddingBottom: 20, 
     paddingHorizontal: 24, 
-    backgroundColor: 'rgba(0,255,0,0.1)', // 영역 확인용
   },
 });
 
