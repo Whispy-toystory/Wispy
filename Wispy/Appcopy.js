@@ -14,7 +14,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <CharacterGenerateScreen />
+      <IntroGenScreen />
     </SafeAreaProvider>
   );
 }

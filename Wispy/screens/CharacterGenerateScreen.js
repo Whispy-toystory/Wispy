@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'rgba(0,0,0,0.1)', // 영역 확인용
   },
   buttonContainer: {
-    padding: 10,
+    paddingTop: 10,
     justifyContent: 'center',
     paddingBottom: 20, 
     paddingHorizontal: 24, 

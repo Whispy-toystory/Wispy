@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.1)', // 영역 확인용
   },
   inputContainer: {
+    paddingTop: 10,
     backgroundColor: Colors.wispyWhite,
     paddingBottom: 20,
     paddingHorizontal: 24,
