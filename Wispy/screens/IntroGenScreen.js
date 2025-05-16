@@ -1,6 +1,6 @@
 // File: IntroGenScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Platform, PixelRatio } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";
@@ -10,8 +10,8 @@ import PrimaryButton from "../components/PrimaryButton";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
-const screenHeight = Dimensions.get('window').height;
-
+const screenWidth = Dimensions.get('window').width;
+const REFERENCE_WIDTH = 375; // 디자인 기준 화면 너비
 
 
 function IntroGenScreen({ route }) {
@@ -20,7 +20,7 @@ function IntroGenScreen({ route }) {
   const userName = route && route.params ? route.params.userName || 'Guest' : 'Guest'; 
   // 예시로 하드코딩된 사용자 이름입니다. 실제로는 props나 전역 상태에서 가져와야 합니다.
   const [APIuserName, setUserName] = useState('');
-  const [isLoading, setIsLoading] = useState(true); // API 호출 중 로딩 상태 관리
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <LinearGradient
@@ -29,8 +29,10 @@ function IntroGenScreen({ route }) {
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
     >
+      
       <SafeAreaView style={styles.safeArea}>
-        <View style={[styles.headerContainer, { paddingTop: insets.top }]}>
+
+        <View style={[styles.headerContainer]}>
           <SubAppLogo />
         </View>
 
@@ -44,10 +46,12 @@ function IntroGenScreen({ route }) {
             </Text>
           </View>
         </View>
+
         {/* 캐릭터 이미지 */}
         <View style={styles.charchterImageContainer}>
           <Wisker/>
         </View>
+
         {/* 버튼 */}
         <View style={styles.inputContainer}>
           <PrimaryButton
@@ -66,32 +70,39 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  headerContainer: {
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flex: 0.2,
+    paddingHorizontal: 15,
+    backgroundColor: 'rgba(255,0,0,0.2)',
+  },
   contentContainer: { 
     flex: 1,
   },
   textcontainer: {
     flex: 1,
-    marginTop: 130,
     justifyContent: 'center',
     alignItems: 'center',
   },
   mainText: {
     textAlign: 'center',
     color: Colors.wispyWhite,
-    fontSize: screenHeight < 700 ? 20 : 24,
-    lineHeight: screenHeight < 700 ? 30 : 36,
+    fontSize: screenWidth < 375 ? 20 : 25,
+    lineHeight: screenWidth < 375 ? 30 : 40,
     fontFamily: Fonts.suitHeavy,
   },
   charchterImageContainer: {
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center', 
+    backgroundColor: 'rgba(0,0,0,0.1)', // 영역 확인용
   },
   inputContainer: {
-    marginTop: 0,
     padding: 10,
     backgroundColor: Colors.wispyWhite,
-    paddingBottom: 25,
+    paddingBottom: 20,
+    paddingHorizontal: 24,
   },
 });
 
