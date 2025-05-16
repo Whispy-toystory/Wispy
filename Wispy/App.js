@@ -1,7 +1,6 @@
-import { useFonts } from 'expo-font';
+// app.js
 import AppLoading from 'expo-app-loading';
 import { fontAssets } from './constants/fonts';
-import CharacterGenerateScreen from './screens/CharacterGenerateScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 
 export default function App() {

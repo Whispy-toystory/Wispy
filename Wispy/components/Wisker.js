@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   defaultImage: {
-    height: screenHeight * 0.48, // 화면 높이의 48%로 설정
-    // width: screenWidth * 0.48, // 화면 넓이의 48%로 설정
+    height: screenHeight * 0.5,
+    // width: screenWidth * 0.5,
     aspectRatio: 1,
     // marginBottom: 10,
   },

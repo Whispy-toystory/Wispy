@@ -1,16 +1,16 @@
-// CharacterGenerateScreen.js
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+// File: IntroGenScreen.js
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, Platform, PixelRatio } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";
 import Fonts from '../constants/fonts';
 import Wisker from '../components/Wisker';
 import PrimaryButton from "../components/PrimaryButton";
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // utils/normalizeText.js
-import { Dimensions, Platform, PixelRatio } from 'react-native';
+// import { Dimensions, Platform, PixelRatio } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -25,11 +25,17 @@ export function normalize(size) {
     return Math.round(PixelRatio.roundToNearestPixel(newSize));
   } else {
     return Math.round(PixelRatio.roundToNearestPixel(newSize));
+
   }
 }
 
 
-function CharacterGenerateScreen() {
+function IntroGenScreen({ route }) {
+  const userName = route && route.params ? route.params.userName || 'Guest' : 'Guest'; 
+  // 예시로 하드코딩된 사용자 이름입니다. 실제로는 props나 전역 상태에서 가져와야 합니다.
+  const [APIuserName, setUserName] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <LinearGradient
       colors={[Colors.wispyPink, Colors.wispyBlue]}
@@ -37,35 +43,35 @@ function CharacterGenerateScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
     >
+      
       <SafeAreaView style={styles.safeArea}>
-       <View style={[styles.headerContainer]}>
+
+        <View style={[styles.headerContainer]}>
           <SubAppLogo />
         </View>
 
         <View style={styles.contentContainer}>
-          <View style={styles.textContainer}>
+          <View style={styles.textcontainer}>
             <Text style={styles.mainText}>
-              I am <Text style={{color:Colors.wispyYellow}}>Whisker</Text> the wishmaker, {'\n'}
-              the magical wizard {'\n'}
-              who will create your{'\n'}
-              <Text style={{color:Colors.wispyOrange}}>special guardian</Text> friend!
+              Ah, so you are <Text style={{fontWeight: 'bold', color: Colors.wispyYellow}}>{userName}</Text>!{'\n'}
+              I can create your very own {'\n'}
+              <Text style={{color:Colors.wispyOrange}}>special guardian</Text> friend, {'\n'}
+              but <Text style={{color:Colors.wispyRed}}>only once</Text> by magic! 
             </Text>
           </View>
         </View>
 
-        <View style={styles.characterImageContainer}>
-          <Wisker />
+        {/* 캐릭터 이미지 */}
+        <View style={styles.charchterImageContainer}>
+          <Wisker/>
         </View>
 
-          <View style={styles.buttonContainer}>
-            <PrimaryButton
-              onPress={() => console.log('Next pressed')}
-              textColor={Colors.wispyBlue}
-            >
-              Next
-            </PrimaryButton>
-          </View>
-        
+        {/* 버튼 */}
+        <View style={styles.inputContainer}>
+          <PrimaryButton
+          onPress={() => console.log('Next pressed')}
+          textColor={Colors.wispyBlue}>Okay, I understand</PrimaryButton>
+        </View>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -87,8 +93,8 @@ const styles = StyleSheet.create({
   contentContainer: { 
     flex: 1,
   },
-  textContainer: {
-    flex: 2, 
+  textcontainer: {
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -99,17 +105,16 @@ const styles = StyleSheet.create({
     lineHeight: normalize(40),
     fontFamily: Fonts.suitHeavy,
   },
-  characterImageContainer: { 
+  charchterImageContainer: {
     flex: 2,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center', 
   },
-  buttonContainer: {
+  inputContainer: {
     paddingTop: 10,
-    justifyContent: 'center',
-    paddingBottom: 20, 
-    paddingHorizontal: 24, 
+    paddingBottom: 20,
+    paddingHorizontal: 24,
   },
 });
 
-export default CharacterGenerateScreen;
+export default IntroGenScreen;

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   buttonInnerContainer: {
     backgroundColor: Colors.wispyButtonYellow,
     paddingVertical: 15,
-    paddingHorizontal: 138,
+    paddingHorizontal: 20,
     elevation: 2,
   },
   buttonText: {

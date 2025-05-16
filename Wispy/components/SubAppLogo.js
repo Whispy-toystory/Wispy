@@ -1,26 +1,28 @@
-// src/components/InAppLogo.js
-import { Image, StyleSheet } from 'react-native';
-import Constants from 'expo-constants';
+// src/components/SubAppLogo.js
+import React from 'react';
+import { Image, StyleSheet, Dimensions } from 'react-native';
 
-const inappLogoSrc = require('../assets/images/logo2.png');
+const screenWidth = Dimensions.get('window').width;
+const inappLogoSrc = require('../assets/images/logo2.png'); // 실제 로고 경로 확인
 
-/**
- * @param {object} props
- * @param {import('react-native').ImageSourcePropType} [props.source=inappLogoSrc]
- * @param {object} [props.style]
- * @param {number} [props.width=120]
- * @param {number} [props.height=120]
- */
-function InAppLogo({
+function SubAppLogo({
   source = inappLogoSrc,
   style,
-  width = 125, 
-  height = 125,
+  width = screenWidth * 0.25,
 }) {
+
   return (
     <Image
       source={source}
-      style={[styles.logoBase, { width, height }, style]}
+      style={[
+        styles.logoBase,
+        {
+          left: 20,
+          width: width,
+          height: width * 0.45,
+        },
+        style,
+      ]}
       resizeMode="contain"
     />
   );
@@ -28,13 +30,8 @@ function InAppLogo({
 
 const styles = StyleSheet.create({
   logoBase: {
-    alignSelf: 'flex-start',
-    marginBottom: 10,
-    paddingTop: Constants.statusBarHeight + 10, // 상태 표시줄 높이 + 10
-    // position: 'absolute', // 절대 위치 지정
-    top: 15,
-    left: 10,
+    position: 'absolute', // 다른 요소와 관계없이 화면 기준으로 위치
   },
 });
 
-export default InAppLogo;
+export default SubAppLogo;
