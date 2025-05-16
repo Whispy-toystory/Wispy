@@ -9,14 +9,29 @@ import Wisker from '../components/Wisker';
 import PrimaryButton from "../components/PrimaryButton";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// utils/normalizeText.js
+// import { Dimensions, Platform, PixelRatio } from 'react-native';
 
-const screenWidth = Dimensions.get('window').width;
-const REFERENCE_WIDTH = 375; // 디자인 기준 화면 너비
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+
+const designScreenWidth = 375; // 디자인 기준 스크린 너비 (조절 가능)
+
+const scale = SCREEN_WIDTH / designScreenWidth;
+
+export function normalize(size) {
+  const newSize = size * scale;
+  if (Platform.OS === 'ios') {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+  } else {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+    // 또는 Android에서 약간의 오프셋을 줄 수 있습니다.
+    // return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
+  }
+}
 
 
 function IntroGenScreen({ route }) {
-  const insets = useSafeAreaInsets();
-
   const userName = route && route.params ? route.params.userName || 'Guest' : 'Guest'; 
   // 예시로 하드코딩된 사용자 이름입니다. 실제로는 props나 전역 상태에서 가져와야 합니다.
   const [APIuserName, setUserName] = useState('');
@@ -81,15 +96,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textcontainer: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
   mainText: {
     textAlign: 'center',
     color: Colors.wispyWhite,
-    fontSize: screenWidth < 375 ? 20 : 25,
-    lineHeight: screenWidth < 375 ? 30 : 40,
+    fontSize: normalize(25),
+    lineHeight: normalize(40),
     fontFamily: Fonts.suitHeavy,
   },
   charchterImageContainer: {
@@ -99,7 +114,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.1)', // 영역 확인용
   },
   inputContainer: {
-    padding: 10,
     backgroundColor: Colors.wispyWhite,
     paddingBottom: 20,
     paddingHorizontal: 24,

@@ -1,6 +1,6 @@
 // CharacterGenerateScreen.js
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SubAppLogo from '../components/SubAppLogo';
@@ -9,8 +9,27 @@ import Fonts from '../constants/fonts';
 import Wisker from '../components/Wisker';
 import PrimaryButton from "../components/PrimaryButton";
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+// utils/normalizeText.js
+import { Dimensions, Platform, PixelRatio } from 'react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+
+const designScreenWidth = 375; // 디자인 기준 스크린 너비 (조절 가능)
+
+const scale = SCREEN_WIDTH / designScreenWidth;
+
+export function normalize(size) {
+  const newSize = size * scale;
+  if (Platform.OS === 'ios') {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+  } else {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+    // 또는 Android에서 약간의 오프셋을 줄 수 있습니다.
+    // return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
+  }
+}
+
 
 function CharacterGenerateScreen() {
   return (
@@ -21,10 +40,11 @@ function CharacterGenerateScreen() {
       end={{ x: 0, y: 1 }}
     >
       <SafeAreaView style={styles.safeArea}>
-        {/* 로고는 absolute positioning이므로 레이아웃 흐름에 영향을 주지 않고 위에 뜹니다. */}
-        <SubAppLogo />
+       <View style={[styles.headerContainer]}>
+          <SubAppLogo />
+        </View>
 
-        <View style={styles.mainContentContainer}>
+        <View style={styles.contentContainer}>
           <View style={styles.textContainer}>
             <Text style={styles.mainText}>
               I am <Text style={{color:Colors.wispyYellow}}>Whisker</Text> the wishmaker, {'\n'}
@@ -60,11 +80,18 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  mainContentContainer: { 
-    flex: 3.5,
+  headerContainer: {
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flex: 0.2,
+    paddingHorizontal: 15,
+    backgroundColor: 'rgba(255,0,0,0.2)',
+  },
+  contentContainer: { 
+    flex: 1,
   },
   textContainer: {
-    flex: 1, 
+    flex: 2, 
     justifyContent: 'center',
     alignItems: 'center',
     // marginBottom: 10,
@@ -72,29 +99,22 @@ const styles = StyleSheet.create({
   mainText: {
     textAlign: 'center',
     color: Colors.wispyWhite,
-    fontSize: screenWidth < 380 ? 20 : 24,
-    lineHeight: screenWidth < 380 ? 30 : 36,
+    fontSize: normalize(25),
+    lineHeight: normalize(40),
     fontFamily: Fonts.suitHeavy,
   },
   characterImageContainer: { 
-    flex: 4,
+    flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
     // backgroundColor: 'rgba(0,0,0,0.1)', // 영역 확인용
   },
-  inputContainer: {
-    marginTop: 0,
-    padding: 10,
-    // backgroundColor: '#72063c',
-    paddingBottom: 25,
-    paddingHorizontal: 24,
-  },
   buttonContainer: {
-    flex: 1, 
+    padding: 10,
     justifyContent: 'center',
     paddingBottom: 20, 
     paddingHorizontal: 24, 
-    // backgroundColor: 'rgba(0,255,0,0.1)', // 영역 확인용
+    backgroundColor: 'rgba(0,255,0,0.1)', // 영역 확인용
   },
 });
 
