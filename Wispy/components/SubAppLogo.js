@@ -1,7 +1,6 @@
 // src/components/SubAppLogo.js
 import React from 'react';
 import { Image, StyleSheet, Dimensions } from 'react-native';
-// import {useSafeAreaInsets, SafeAreaProvider} from 'react-native-safe-area-context';
 
 const screenWidth = Dimensions.get('window').width;
 const inappLogoSrc = require('../assets/images/logo2.png'); // 실제 로고 경로 확인
@@ -11,7 +10,6 @@ function SubAppLogo({
   style,
   width = screenWidth * 0.25,
 }) {
-  // const insets = useSafeAreaInsets();
 
   return (
     <Image

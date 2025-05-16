@@ -15,7 +15,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 
-const designScreenWidth = 375; // 디자인 기준 스크린 너비 (조절 가능)
+const designScreenWidth = 375;
 
 const scale = SCREEN_WIDTH / designScreenWidth;
 
