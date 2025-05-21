@@ -5,7 +5,8 @@ import { fontAssets } from './constants/fonts';
 import IntroGenScreen from './screens/IntroGenScreen';
 import CharacterGenerateScreen from './screens/CharacterGenerateScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import Onboarding1Screen from './screens/Onboarding1Screen';
+import WelcomeScreen from './screens/WelcomeScreen';
 
 export default function Appcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
@@ -14,7 +15,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <IntroGenScreen />
+      <Onboarding1Screen />
     </SafeAreaProvider>
   );
 }

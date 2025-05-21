@@ -4,6 +4,7 @@ import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";
 import Fonts from '../constants/fonts';
 import WispyBubble from '../assets/images/WispyBubble.png';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -15,6 +16,7 @@ function WelcomeScreen() {
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
         >
+            <SafeAreaView style={styles.safeArea}>
             <View>
                 <SubAppLogo />
             </View>
@@ -27,6 +29,9 @@ function WelcomeScreen() {
             <View style={styles.imageContainer}>
                 <Image source={WispyBubble} style={styles.image} resizeMode="contain" />
             </View>
+            
+            </SafeAreaView>
+
         </LinearGradient>
     );
 }
@@ -35,6 +40,10 @@ export default WelcomeScreen;
 
 const styles = StyleSheet.create({
     gradientContainer: {
+        flex: 1,
+    },
+    
+     safeArea: {
         flex: 1,
     },
 
