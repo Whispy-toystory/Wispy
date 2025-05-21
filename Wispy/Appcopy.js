@@ -15,7 +15,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <WelcomeScreen />
+      <Onboarding1Screen />
     </SafeAreaProvider>
   );
 }
