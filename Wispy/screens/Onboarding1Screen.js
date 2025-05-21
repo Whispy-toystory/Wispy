@@ -1,15 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Image,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import SubAppLogo from '../components/SubAppLogo';
 import PrimaryButton from '../components/PrimaryButton';
-
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 
 import Quite from '../assets/images/quite.png';
+import WispyLogo from '../assets/images/logo2.png';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -22,16 +27,18 @@ function Onboarding1Screen() {
       end={{ x: 0, y: 1 }}
     >
       <SafeAreaView style={styles.safeArea}>
-        <View>
-            <SubAppLogo />
+        <View style={styles.subAppLogoContainer}>
+          <Image source={WispyLogo} style={styles.logoTopLeft} />
         </View>
 
         <View style={styles.textContainer}>
           <Text style={styles.mainText}>You've discovered</Text>
-          <View style={styles.inlineTextLogo}>
-            <Text style={styles.mainText}> our secret</Text>
-            <SubAppLogo style={styles.inlineLogo} />
+
+          <View style={styles.textWithLogoRow}>
+            <Text style={styles.mainText}>our secret</Text>
+            <Image source={WispyLogo} style={styles.inlineImage} />
           </View>
+
           <Text style={styles.mainText}>Wonderland!</Text>
         </View>
 
@@ -47,7 +54,6 @@ function Onboarding1Screen() {
             Next
           </PrimaryButton>
         </View>
-
       </SafeAreaView>
     </LinearGradient>
   );
@@ -62,6 +68,15 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  subAppLogoContainer: {
+    marginLeft: 24,
+    marginTop: 8,
+  },
+  logoTopLeft: {
+    width: 100,
+    height: 40,
+    resizeMode: 'contain',
+  },
   textContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -75,15 +90,17 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     fontFamily: Fonts.suitHeavy,
   },
-  inlineTextLogo: {
+  textWithLogoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 60,
+    justifyContent: 'center',
+    marginTop: 4,
   },
-  inlineLogo: {
+  inlineImage: {
     width: 80,
-    height: 80,
-    marginLeft: 125,
+    height: 32,
+    resizeMode: 'contain',
+    marginLeft: 6,
   },
   imageContainer: {
     marginTop: 50,
