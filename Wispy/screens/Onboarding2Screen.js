@@ -6,6 +6,8 @@ import {
   Dimensions,
   Image,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,6 +24,7 @@ const screenHeight = Dimensions.get('window').height;
 function Onboarding2Screen() {
   const [nickname, setNickname] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     const nicknameRegex = /^[a-zA-Z]+$/;
@@ -40,42 +43,52 @@ function Onboarding2Screen() {
       end={{ x: 0, y: 1 }}
     >
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.subAppLogoContainer}>
-          <Image source={WispyLogo} style={styles.logoTopLeft} />
-        </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.subAppLogoContainer}>
+            <Image source={WispyLogo} style={styles.logoTopLeft} />
+          </View>
 
-        <View style={styles.textContainer}>
-          <Text style={styles.mainText}>Share your Wonderful</Text>
-          <Text style={styles.mainText}>name with me first!</Text>
-        </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.mainText}>Share your Wonderful</Text>
+            <Text style={styles.mainText}>name with me first!</Text>
+          </View>
 
-        <View style={styles.inputBoxContainer}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Nickname (English, numbers, underscores and periods only)"
-            placeholderTextColor={Colors.wispyGrey}
-            value={nickname}
-            onChangeText={setNickname}
-            autoCapitalize="none"
-          />
-          <Text style={styles.validationText}>
-            Please use only English letters. Numbers, spaces, underscores, and special characters are not allowed.
-          </Text>
-        </View>
+          <View style={styles.inputBoxContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nickname (English letters only)"
+              placeholderTextColor={Colors.wispyGrey}
+              value={nickname}
+              onChangeText={setNickname}
+              onFocus={() => setTouched(true)}
+              autoCapitalize="none"
+            />
+            {touched && !isValid && nickname.length > 0 && (
+              <Text style={styles.validationText}>
+                Please use only English letters. Numbers, spaces, underscores, and special characters are not allowed.
+              </Text>
+            )}
+          </View>
 
-        <View style={styles.imageContainer}>
-          <Image source={Listen} style={styles.image} resizeMode="contain" />
-        </View>
+          <View style={styles.imageContainer}>
+            <Image source={Listen} style={styles.image} resizeMode="contain" />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <PrimaryButton
-            onPress={handleComplete}
-            disabled={!isValid}
-            textColor={Colors.wispyPink}
-          >
+          <View style={styles.inputContainer}>
+            <PrimaryButton
+              onPress={handleComplete}
+              disabled={!isValid}
+              textColor={isValid ? Colors.wispyPink : Colors.wispyGrey}
+              backgroundColor={isValid ? Colors.wispyButtonYellow : Colors.wispyButtonDisabled}
+            >
             Complete
-          </PrimaryButton>
-        </View>
+            </PrimaryButton>
+
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -141,5 +154,4 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 24,
   },
-  
 });
