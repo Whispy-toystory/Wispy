@@ -1,6 +1,8 @@
 // components/StepIndicator.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Colors from '../constants/colors';
+import Fonts from '../constants/fonts';
 
 export default function StepIndicator({ text }) {
   return (
@@ -18,9 +20,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   text: {
-    color: 'white',
+    color: Colors.wispyWhite,
+    fontFamily: Fonts.suitExtraBold,
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
+    
   },
 });

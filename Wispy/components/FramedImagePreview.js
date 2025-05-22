@@ -1,6 +1,8 @@
 // components/FramedImagePreview.js
 import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import Colors from '../constants/colors';
+import Fonts from '../constants/fonts';
 
 const FRAME_IMAGE = require('../assets/images/photoframe.png'); // 실제 경로 확인
 const { width: windowWidth } = Dimensions.get('window');
@@ -83,9 +85,10 @@ const styles = StyleSheet.create({
     // backgroundColor: 'rgba(0,255,0,0.1)', // 영역 확인용
   },
   label: {
+    fontFamily: Fonts.suitExtraBold, // 폰트 패밀리
     fontSize: windowWidth * 0.032, // 프레임 크기에 맞춰 조절
     fontWeight: '600', // 약간 두껍게
-    color: '#555',    // 프레임과 어울리는 색상
+    color: Colors.wispyBlack,    // 프레임과 어울리는 색상
     textAlign: 'center',
   },
 });
