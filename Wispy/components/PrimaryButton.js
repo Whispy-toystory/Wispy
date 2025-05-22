@@ -9,14 +9,14 @@ function PrimaryButton({
   backgroundColor = Colors.wispyButtonYellow,
   style = {},
   textStyle = {},
-  disabled = false, // ✅ 새로 추가
+  disabled = false,
 }) {
   const finalBackgroundColor = disabled
-    ? Colors.wispyButtonDisabled // ✅ 비활성 배경색
+    ? Colors.wispyButtonDisabled
     : backgroundColor;
 
   const finalTextColor = disabled
-    ? Colors.wispyGrey // ✅ 비활성 텍스트색
+    ? Colors.wispyGrey
     : textColor;
 
   return (
@@ -25,10 +25,10 @@ function PrimaryButton({
         style={({ pressed }) => [
           styles.buttonInnerContainer,
           { backgroundColor: finalBackgroundColor },
-          pressed && !disabled && styles.pressed, // ✅ disabled면 누름 효과 제거
+          pressed && !disabled && styles.pressed,
         ]}
-        onPress={disabled ? null : onPress} // ✅ 비활성일 때 onPress 제거
-        disabled={disabled} // ✅ 실제 비활성 처리
+        onPress={disabled ? null : onPress}
+        disabled={disabled}
         android_ripple={disabled ? null : { color: '#8F8311' }}
       >
         <Text style={[styles.buttonText, { color: finalTextColor }, textStyle]}>
