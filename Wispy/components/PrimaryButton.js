@@ -6,20 +6,32 @@ function PrimaryButton({
   children,
   onPress = () => {},
   textColor = Colors.wispyBlack,
+  backgroundColor = Colors.wispyButtonYellow,
   style = {},
-  textStyle = {}
+  textStyle = {},
+  disabled = false,
 }) {
+  const finalBackgroundColor = disabled
+    ? Colors.wispyButtonDisabled 
+    : backgroundColor;
+
+  const finalTextColor = disabled
+    ? Colors.wispyGrey
+    : textColor;
+
   return (
     <View style={[styles.buttonOuterContainer, style]}>
       <Pressable
         style={({ pressed }) => [
           styles.buttonInnerContainer,
-          pressed && styles.pressed
+          { backgroundColor: finalBackgroundColor },
+          pressed && !disabled && styles.pressed,
         ]}
-        onPress={onPress}
-        android_ripple={{ color: '#8F8311' }}
+        onPress={disabled ? null : onPress}
+        disabled={disabled}
+        android_ripple={disabled ? null : { color: '#8F8311' }}
       >
-        <Text style={[styles.buttonText, { color: textColor }]}>
+        <Text style={[styles.buttonText, { color: finalTextColor }, textStyle]}>
           {children}
         </Text>
       </Pressable>
@@ -35,7 +47,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonInnerContainer: {
-    backgroundColor: Colors.wispyButtonYellow,
     paddingVertical: 15,
     paddingHorizontal: 20,
     elevation: 2,
@@ -43,7 +54,7 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     fontFamily: Fonts.suitHeavy,
-    fontSize: 22
+    fontSize: 22,
   },
   pressed: {
     opacity: 0.75,

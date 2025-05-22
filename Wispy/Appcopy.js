@@ -2,7 +2,7 @@
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { fontAssets } from './constants/fonts';
-import IntroGenScreen from './screens/IntroGenScreen';
+import GenWaitingScreen from './screens/GenWaitingScreen';
 import CameraCaptureScreen from './screens/CameraCaptureScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -14,7 +14,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <CameraCaptureScreen />
+      <GenWaitingScreen />
     </SafeAreaProvider>
   );
 }
