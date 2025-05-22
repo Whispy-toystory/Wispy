@@ -6,8 +6,6 @@ import {
   Dimensions,
   Image,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -35,6 +33,8 @@ function Onboarding2Screen() {
     console.log('Complete pressed with nickname:', nickname);
   };
 
+  const showValidation = touched && nickname.length > 0 && !isValid;
+
   return (
     <LinearGradient
       colors={[Colors.wispyPink, Colors.wispyBlue]}
@@ -43,17 +43,16 @@ function Onboarding2Screen() {
       end={{ x: 0, y: 1 }}
     >
       <SafeAreaView style={styles.safeArea}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{ flex: 1 }}
-        >
+        <View style={styles.contentContainer}>
           <View style={styles.subAppLogoContainer}>
             <Image source={WispyLogo} style={styles.logoTopLeft} />
           </View>
 
           <View style={styles.textContainer}>
             <Text style={styles.mainText}>Share your Wonderful</Text>
-            <Text style={styles.mainText}>name with me first!</Text>
+            <Text style={styles.mainText}>
+              <Text style={styles.nameText}>name</Text> with me first!
+            </Text>
           </View>
 
           <View style={styles.inputBoxContainer}>
@@ -66,29 +65,42 @@ function Onboarding2Screen() {
               onFocus={() => setTouched(true)}
               autoCapitalize="none"
             />
-            {touched && !isValid && nickname.length > 0 && (
-              <Text style={styles.validationText}>
-                Please use only English letters. Numbers, spaces, underscores, and special characters are not allowed.
+
+            <View style={styles.validationTextContainer}>
+              <Text
+                style={[
+                  styles.redText,
+                  !showValidation && styles.invisibleText,
+                ]}
+              >
+                Please use only English letters.
               </Text>
-            )}
+              <Text
+                style={[
+                  styles.greyText,
+                  !showValidation && styles.invisibleText,
+                ]}
+              >
+                Numbers, spaces, underscores, and special characters are not allowed.
+              </Text>
+            </View>
           </View>
 
           <View style={styles.imageContainer}>
             <Image source={Listen} style={styles.image} resizeMode="contain" />
           </View>
+        </View>
 
-          <View style={styles.inputContainer}>
-            <PrimaryButton
-              onPress={handleComplete}
-              disabled={!isValid}
-              textColor={isValid ? Colors.wispyPink : Colors.wispyGrey}
-              backgroundColor={isValid ? Colors.wispyButtonYellow : Colors.wispyButtonDisabled}
-            >
+        <View style={styles.buttonContainer}>
+          <PrimaryButton
+            onPress={handleComplete}
+            disabled={!isValid}
+            textColor={isValid ? Colors.wispyPink : Colors.wispyGrey}
+            backgroundColor={isValid ? Colors.wispyButtonYellow : Colors.wispyButtonDisabled}
+          >
             Complete
-            </PrimaryButton>
-
-          </View>
-        </KeyboardAvoidingView>
+          </PrimaryButton>
+        </View>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -101,6 +113,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   safeArea: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  contentContainer: {
     flex: 1,
   },
   subAppLogoContainer: {
@@ -124,6 +140,10 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     fontFamily: Fonts.suitHeavy,
   },
+  nameText: {
+    color: Colors.wispyNavy,
+    fontFamily: Fonts.suitHeavy,
+  },
   inputBoxContainer: {
     marginTop: 30,
     paddingHorizontal: 24,
@@ -135,14 +155,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: Fonts.suitMedium,
   },
-  validationText: {
+  validationTextContainer: {
+    marginTop: 8,
+    minHeight: 36,
+  },
+  redText: {
     color: Colors.wispyRed,
     fontSize: 12,
-    marginTop: 8,
+    fontFamily: Fonts.suitExtraBold,
+    lineHeight: 16,
+  },
+  greyText: {
+    color: Colors.wispyRed,
+    fontSize: 12,
     fontFamily: Fonts.suitLight,
+    lineHeight: 16,
+  },
+  invisibleText: {
+    opacity: 0,
   },
   imageContainer: {
-    marginTop: 50,
+    marginTop: 10,
     alignItems: 'center',
     marginBottom: 30,
   },
@@ -150,8 +183,8 @@ const styles = StyleSheet.create({
     width: 313,
     height: 313,
   },
-  inputContainer: {
-    paddingBottom: 20,
+  buttonContainer: {
     paddingHorizontal: 24,
+    paddingBottom: 20,
   },
 });
