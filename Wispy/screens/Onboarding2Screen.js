@@ -6,6 +6,8 @@ import {
   Dimensions,
   Image,
   TextInput,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,73 +38,78 @@ function Onboarding2Screen() {
   const showValidation = touched && nickname.length > 0 && !isValid;
 
   return (
-    <LinearGradient
-      colors={[Colors.wispyPink, Colors.wispyBlue]}
-      style={styles.gradientContainer}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.contentContainer}>
-          <View style={styles.subAppLogoContainer}>
-            <Image source={WispyLogo} style={styles.logoTopLeft} />
-          </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <LinearGradient
+        colors={[Colors.wispyPink, Colors.wispyBlue]}
+        style={styles.gradientContainer}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.contentContainer}>
+            <View style={styles.subAppLogoContainer}>
+              <Image source={WispyLogo} style={styles.logoTopLeft} />
+            </View>
 
-          <View style={styles.textContainer}>
-            <Text style={styles.mainText}>Share your Wonderful</Text>
-            <Text style={styles.mainText}>
-              <Text style={styles.nameText}>name</Text> with me first!
-            </Text>
-          </View>
-
-          <View style={styles.inputBoxContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Nickname (English letters only)"
-              placeholderTextColor={Colors.wispyGrey}
-              value={nickname}
-              onChangeText={setNickname}
-              onFocus={() => setTouched(true)}
-              autoCapitalize="none"
-            />
-
-            <View style={styles.validationTextContainer}>
-              <Text
-                style={[
-                  styles.redText,
-                  !showValidation && styles.invisibleText,
-                ]}
-              >
-                Please use only English letters.
+            <View style={styles.textContainer}>
+              <Text style={styles.mainText}>Share your Wonderful</Text>
+              <Text style={styles.mainText}>
+                <Text style={styles.nameText}>name</Text> with me first!
               </Text>
-              <Text
+            </View>
+
+            <View style={styles.inputBoxContainer}>
+              <TextInput
                 style={[
-                  styles.greyText,
-                  !showValidation && styles.invisibleText,
+                  styles.textInput,
+                  isValid && styles.textInputValidBorder,
                 ]}
-              >
-                Numbers, spaces, underscores, and special characters are not allowed.
-              </Text>
+                placeholder="Nickname (English letters only)"
+                placeholderTextColor={Colors.wispyGrey}
+                value={nickname}
+                onChangeText={setNickname}
+                onFocus={() => setTouched(true)}
+                autoCapitalize="none"
+              />
+
+              <View style={styles.validationTextContainer}>
+                <Text
+                  style={[
+                    styles.redText,
+                    !showValidation && styles.invisibleText,
+                  ]}
+                >
+                  Please use only English letters.
+                </Text>
+                <Text
+                  style={[
+                    styles.greyText,
+                    !showValidation && styles.invisibleText,
+                  ]}
+                >
+                  Numbers, spaces, underscores, and special characters are not allowed.
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.imageContainer}>
+              <Image source={Listen} style={styles.image} resizeMode="contain" />
             </View>
           </View>
 
-          <View style={styles.imageContainer}>
-            <Image source={Listen} style={styles.image} resizeMode="contain" />
+          <View style={styles.buttonContainer}>
+            <PrimaryButton
+              onPress={handleComplete}
+              disabled={!isValid}
+              textColor={isValid ? Colors.wispyPink : Colors.wispyGrey}
+              backgroundColor={isValid ? Colors.wispyButtonYellow : Colors.wispyButtonDisabled}
+            >
+              Complete
+            </PrimaryButton>
           </View>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <PrimaryButton
-            onPress={handleComplete}
-            disabled={!isValid}
-            textColor={isValid ? Colors.wispyPink : Colors.wispyGrey}
-            backgroundColor={isValid ? Colors.wispyButtonYellow : Colors.wispyButtonDisabled}
-          >
-            Complete
-          </PrimaryButton>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
+        </SafeAreaView>
+      </LinearGradient>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -154,6 +161,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     fontFamily: Fonts.suitMedium,
+    borderWidth: 2, // 항상 유지
+    borderColor: 'transparent', // 초기값은 보이지 않게
+  },
+  textInputValidBorder: {
+    borderColor: Colors.wispyButtonYellow,
   },
   validationTextContainer: {
     marginTop: 8,
