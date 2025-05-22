@@ -11,6 +11,7 @@ const Colors = {
     wispyRed: '#FF5252',
     wispyGrey: '#808080',
     wispyDarkerPink: '#E55C5F',
+    wispyButtonDisabled: '#1B1A20'
 };
 
 export default Colors;
