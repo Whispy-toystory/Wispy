@@ -2,6 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import Colors from "../constants/colors";
+import Fonts from '../constants/fonts';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
     // marginTop: 0, // wrapper의 alignItems: 'flex-start'로 인해 상단에 붙음
   },
   bubble: {
-    backgroundColor: '#FFDD77',
+    backgroundColor: Colors.wispyYellow,
     paddingHorizontal: BUBBLE_PADDING_HORIZONTAL,
     paddingVertical: BUBBLE_PADDING_VERTICAL,
     borderRadius: 20,
@@ -79,7 +80,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   text: {
-    color: '#333333',
+    color: Colors.wispyBlack,
+    fontFamily: Fonts.suitBold,
     fontSize: windowWidth * 0.04, // 화면 너비에 따른 폰트 크기 (조정 가능)
     textAlign: 'left',
     fontWeight: '500',

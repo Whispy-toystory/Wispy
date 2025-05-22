@@ -2,9 +2,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Alert, Dimensions, TouchableOpacity, Platform, Image } from 'react-native';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Fonts from '../constants/fonts';
+import Colors from '../constants/colors';
 
 const DEFAULT_CHARACTER_IMAGE = require('../assets/images/Wisker.png'); // 캐릭터 이미지
 
@@ -183,10 +186,10 @@ export default function CameraCaptureScreen() {
 
     // --- "다시 찍기"를 위한 함수 ---
 
-    if (!permission) return <View style={styles.centered}><Text>Requesting permission...</Text></View>;
+    if (!permission) return <View style={styles.centered}><Text style={{fontFamily: Fonts.suitBold}}>Requesting permission...</Text></View>;
     if (!permission.granted) return (
         <View style={styles.centered}>
-            <Text>No camera access.</Text>
+            <Text style={{fontFamily: Fonts.suitBold}}>No camera access.</Text>
             <TouchableOpacity onPress={requestPermission} style={styles.utilityButton}>
                 <Text style={styles.utilityButtonText}>Grant</Text>
             </TouchableOpacity>
@@ -198,7 +201,14 @@ export default function CameraCaptureScreen() {
   // REVIEW 단계 UI 수정
   if (currentStep === CAPTURE_STEPS.REVIEW) {
     return (
+        <LinearGradient
+            colors={[Colors.wispyPink, Colors.wispyBlue]}
+            style={{ flex: 1 }}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+        >
       <SafeAreaView style={{ flex: 1 }}>
+        
         <View style={[styles.reviewScreenContainerStyle, { paddingTop: 10, paddingBottom: 10 }]}>
           {/* 상단 StepIndicator는 조건부로 렌더링 (여기서는 비워둠) */}
           <InstructionText
@@ -228,16 +238,16 @@ export default function CameraCaptureScreen() {
               <Text style={styles.utilityButtonText}>Retake All</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => console.log('Next')} style={[styles.utilityButton, styles.reviewButton, styles.okButton]}>
-              <Text style={styles.utilityButtonText}>OK</Text>
+              <Text style={[styles.utilityButtonText, { color: Colors.wispyBlack }]}>OK</Text>
             </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
+    </LinearGradient>
     );
   }
 
   if (currentStep === CAPTURE_STEPS.DONE) {
-    // ...existing code...
     return (
       <View style={[styles.centered, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         <StepIndicator text={currentStepInfo.indicatorText} />
@@ -322,8 +332,8 @@ export default function CameraCaptureScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'black' },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#f8f8f8' },
+  container: { flex: 1, backgroundColor: Colors.wispyBlack },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: Colors.wispyWhite },
   cameraAreaContainer: { flex: 1, position: 'relative' },
   camera: { ...StyleSheet.absoluteFillObject },
   overlayContainer: {
@@ -382,7 +392,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between', // 말풍선, 이미지 그리드, 버튼 영역 배분
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
     paddingHorizontal: 10, // 전체 좌우 패딩
   },
   reviewTopSpace: {
@@ -412,16 +421,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingVertical: 12,
     paddingHorizontal: 25,
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.wispyGrey,
     borderRadius: 8
   },
-  utilityButtonText: { color: 'white', fontSize: 16, fontWeight: '500', },
+  utilityButtonText: { color: 'white',fontFamily: Fonts.suitHeavy, fontSize: 16, fontWeight: '500', },
   reviewButton: {
     flex: 1,
     marginHorizontal: 8,
     paddingVertical: 15,
   },
   okButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: Colors.wispyButtonYellow,
   },
 });
