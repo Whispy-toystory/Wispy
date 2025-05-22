@@ -6,20 +6,22 @@ function PrimaryButton({
   children,
   onPress = () => {},
   textColor = Colors.wispyBlack,
+  backgroundColor = Colors.wispyButtonYellow, // ✅ 1. backgroundColor prop 추가 (기본값 지정)
   style = {},
-  textStyle = {}
+  textStyle = {},
 }) {
   return (
     <View style={[styles.buttonOuterContainer, style]}>
       <Pressable
         style={({ pressed }) => [
           styles.buttonInnerContainer,
-          pressed && styles.pressed
+          { backgroundColor }, // ✅ 2. backgroundColor를 스타일로 적용
+          pressed && styles.pressed,
         ]}
         onPress={onPress}
         android_ripple={{ color: '#8F8311' }}
       >
-        <Text style={[styles.buttonText, { color: textColor }]}>
+        <Text style={[styles.buttonText, { color: textColor }, textStyle]}>
           {children}
         </Text>
       </Pressable>
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonInnerContainer: {
-    backgroundColor: Colors.wispyButtonYellow,
     paddingVertical: 15,
     paddingHorizontal: 20,
     elevation: 2,
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     fontFamily: Fonts.suitHeavy,
-    fontSize: 22
+    fontSize: 22,
   },
   pressed: {
     opacity: 0.75,
