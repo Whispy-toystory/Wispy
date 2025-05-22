@@ -161,8 +161,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     fontFamily: Fonts.suitMedium,
-    borderWidth: 2, // 항상 유지
-    borderColor: 'transparent', // 초기값은 보이지 않게
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   textInputValidBorder: {
     borderColor: Colors.wispyButtonYellow,
@@ -173,14 +173,14 @@ const styles = StyleSheet.create({
   },
   redText: {
     color: Colors.wispyRed,
-    fontSize: 12,
+    fontSize: 15,
     fontFamily: Fonts.suitExtraBold,
     lineHeight: 16,
   },
   greyText: {
     color: Colors.wispyRed,
     fontSize: 12,
-    fontFamily: Fonts.suitLight,
+    fontFamily: Fonts.suitExtraBold,
     lineHeight: 16,
   },
   invisibleText: {
