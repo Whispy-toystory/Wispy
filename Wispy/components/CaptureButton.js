@@ -2,20 +2,45 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 
-export default function CaptureButton({ onPress, title }) { // title prop 추가
-    return (
-        <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
-            {title ? ( // title prop이 있으면 텍스트 버튼 표시
-                <View style={[styles.buttonBody, styles.textButtonBody, title === "OK" ? styles.okButtonBody : (title === "Done" ? styles.doneButtonBody : {})]}>
-                    <Text style={styles.buttonText}>{title}</Text>
-                </View>
-            ) : ( // title prop이 없으면 기존 아이콘 모양 버튼 표시
-                <View style={[styles.buttonBody, styles.iconButtonBody]}>
-                    <View style={styles.innerCircle} />
-                </View>
-            )}
-        </TouchableOpacity>
-    );
+// utils/normalizeText.js
+import { Dimensions, Platform, PixelRatio } from 'react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+
+const designScreenWidth = 375;
+
+const scale = SCREEN_WIDTH / designScreenWidth;
+
+export function normalize(size) {
+  const newSize = size * scale;
+  if (Platform.OS === 'ios') {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+  } else {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize));
+  }
+}
+
+
+export default function CaptureButton({ onPress, title, disabled }) {
+  return (
+    <TouchableOpacity
+      onPress={disabled ? () => {} : onPress} // disabled 상태일 때 onPress 막기 (이중 방어)
+      style={[styles.buttonContainer, disabled && styles.disabledStyle]} // 비활성화 시 스타일 적용
+      disabled={disabled}
+      activeOpacity={disabled ? 1 : 0.7} // 비활성화 시 터치 피드백 없애거나, 기본 activeOpacity 사용
+    >
+      {title ? (
+        <View style={[styles.buttonBody, styles.textButtonBody, title === "OK" ? styles.okButtonBody : {}, disabled && styles.disabledButtonVisuals /* 내부 UI 요소도 비활성화 효과 */]}>
+          <Text style={[styles.buttonText, disabled && styles.disabledTextVisuals]}>{title}</Text>
+        </View>
+      ) : (
+        <View style={[styles.buttonBody, styles.iconButtonBody, disabled && styles.disabledButtonVisuals]}>
+          <View style={[styles.innerCircle, disabled && styles.disabledInnerCircleVisuals]} />
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -57,7 +82,20 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontSize: 22,
+        fontSize: normalize(22),
         fontWeight: 'bold',
+    },
+    disabledStyle: { // TouchableOpacity 자체에 적용될 수 있는 스타일 (예: 전체 투명도)
+        opacity: 0.6,
+    },
+    disabledButtonVisuals: { // 버튼 내부 몸통의 시각적 비활성화
+        backgroundColor: '#c0c0c0', // 예시: 배경색 변경
+        // opacity: 0.6, // 이미 부모에서 opacity를 줬다면 중복될 수 있음
+    },
+    disabledTextVisuals: { // 비활성화 시 텍스트 스타일
+        color: '#a0a0a0',
+    },
+    disabledInnerCircleVisuals: { // 비활성화 시 아이콘 버튼 내부 원 스타일
+        backgroundColor: 'lightgrey',
     },
 });

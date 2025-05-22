@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: Fonts.suitExtraBold, // 폰트 패밀리
     fontSize: windowWidth * 0.032, // 프레임 크기에 맞춰 조절
-    fontWeight: '600', // 약간 두껍게
     color: Colors.wispyBlack,    // 프레임과 어울리는 색상
     textAlign: 'center',
   },
