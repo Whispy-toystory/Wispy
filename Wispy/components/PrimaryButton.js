@@ -11,13 +11,9 @@ function PrimaryButton({
   textStyle = {},
   disabled = false,
 }) {
-  const finalBackgroundColor = disabled
-    ? Colors.wispyButtonDisabled
-    : backgroundColor;
+  const finalBackgroundColor = disabled ? Colors.wispyButtonDisabled : backgroundColor;
 
-  const finalTextColor = disabled
-    ? Colors.wispyGrey
-    : textColor;
+  const finalTextColor = disabled ? Colors.wispyGrey : textColor;
 
   return (
     <View style={[styles.buttonOuterContainer, style]}>
