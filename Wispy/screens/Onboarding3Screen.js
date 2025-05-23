@@ -21,6 +21,14 @@ const screenHeight = Dimensions.get('window').height;
 function Onboarding3Screen() {
   const name = 'Robin';
 
+  const handleBackPress = () => {
+    console.log('Back 버튼 눌림!');
+  };
+
+  const handleNextPress = () => {
+    console.log('Next 버튼 눌림!');
+  };
+
   return (
     <LinearGradient
       colors={[Colors.wispyPink, Colors.wispyBlue]}
@@ -34,8 +42,12 @@ function Onboarding3Screen() {
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={styles.greetingText}>Hi <Text style={styles.nameText}>{name}</Text></Text>
-          <Text style={styles.middleText}>What an <Text style={styles.highlightText}>awesome name!</Text></Text>
+          <Text style={styles.greetingText}>
+            Hi <Text style={styles.nameText}>{name}</Text>
+          </Text>
+          <Text style={styles.middleText}>
+            What an <Text style={styles.highlightText}>awesome name!</Text>
+          </Text>
           <Text style={styles.thankYouText}>Thank you for sharing!</Text>
         </View>
 
@@ -45,6 +57,7 @@ function Onboarding3Screen() {
 
         <View style={styles.buttonContainer}>
           <PrimaryButton
+            onPress={handleBackPress}
             backgroundColor="white"
             textColor={Colors.wispyBlue}
             style={styles.button}
@@ -52,6 +65,7 @@ function Onboarding3Screen() {
             Back
           </PrimaryButton>
           <PrimaryButton
+            onPress={handleNextPress}
             backgroundColor={Colors.wispyButtonYellow}
             textColor={Colors.wispyTextBlue}
             style={styles.button}
@@ -111,7 +125,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   imageContainer: {
-    marginTop:10,
+    marginTop: 10,
     alignItems: 'center',
     marginVertical: 30,
   },
