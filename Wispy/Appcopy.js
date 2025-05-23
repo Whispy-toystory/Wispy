@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Onboarding1Screen from './screens/Onboarding1Screen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import Onboarding2Screen from './screens/Onboarding2Screen';
+import Onboarding3Screen from './screens/Onboarding3Screen';
 
 export default function Appcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
@@ -16,7 +17,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <Onboarding2Screen />
+      <Onboarding3Screen />
     </SafeAreaProvider>
   );
 }
