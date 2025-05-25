@@ -99,8 +99,6 @@ const STEP_DETAILS = {
 };
 
 export default function CameraCaptureScreen() {
-  const [isCapturingVisual, setIsCapturingVisual] = useState(false); // UI 비활성화 및 버튼 disabled 상태용
-  const isActuallyCapturing = useRef(false); // 실제 촬영 중인지 즉각적인 확인용 ref
   const insets = useSafeAreaInsets();
   const [facing, setFacing] = useState('back');
   const [flash, setFlash] = useState('off');
@@ -113,6 +111,10 @@ export default function CameraCaptureScreen() {
   });
   const cameraRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
+  
+  // 촬영 중 상태 관리
+  const [isCapturing, setIsCapturing] = useState(false);
+  const isCapturingRef = useRef(false);
 
   useEffect(() => {
     (async () => {
@@ -122,36 +124,95 @@ export default function CameraCaptureScreen() {
     })();
   }, [permission, requestPermission]);
 
-  const handleTakePicture = async () => {
+  // 메인 버튼 핸들러 - 모든 단계에서 사용
+  const handleMainButtonPress = async () => {
+    // 이미 촬영 중이면 무시
+    if (isCapturingRef.current) {
+      console.log("Already capturing, ignoring button press");
+      return;
+    }
+
+    // 즉시 촬영 상태로 설정
+    isCapturingRef.current = true;
+    setIsCapturing(true);
+
     const currentStepInfo = STEP_DETAILS[currentStep];
-    if (currentStep === CAPTURE_STEPS.READY) {
-      if (currentStepInfo.nextStep) setCurrentStep(currentStepInfo.nextStep);
-      return;
-    }
-    if (currentStep === CAPTURE_STEPS.REVIEW) {
-      if (currentStepInfo.nextStep) setCurrentStep(currentStepInfo.nextStep);
-      console.log('Review complete:', capturedImages);
-      return;
-    }
-    if (currentStep === CAPTURE_STEPS.DONE) {
-      setCurrentStep(CAPTURE_STEPS.READY);
-      setCapturedImages({
-        FRONT: null,
-        RIGHT: null,
-        LEFT: null,
-        BACK: null,
-      });
-      return;
-    }
-    if (!cameraRef.current) return;
+
     try {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
-      setCapturedImages(prev => ({ ...prev, [currentStep]: photo.uri }));
-      if (currentStepInfo.nextStep) setCurrentStep(currentStepInfo.nextStep);
-      else setCurrentStep(CAPTURE_STEPS.DONE);
+      // READY 단계: 바로 다음 단계로 이동
+      if (currentStep === CAPTURE_STEPS.READY) {
+        if (currentStepInfo.nextStep) {
+          setCurrentStep(currentStepInfo.nextStep);
+        }
+        return;
+      }
+
+      // REVIEW 단계: OK 버튼 누르면 완료
+      if (currentStep === CAPTURE_STEPS.REVIEW) {
+        console.log('Review complete:', capturedImages);
+        if (currentStepInfo.nextStep) {
+          setCurrentStep(currentStepInfo.nextStep);
+        }
+        return;
+      }
+
+      // DONE 단계: 처음으로 돌아가기
+      if (currentStep === CAPTURE_STEPS.DONE) {
+        setCurrentStep(CAPTURE_STEPS.READY);
+        setCapturedImages({
+          [CAPTURE_STEPS.FRONT]: null,
+          [CAPTURE_STEPS.RIGHT]: null,
+          [CAPTURE_STEPS.LEFT]: null,
+          [CAPTURE_STEPS.BACK]: null,
+        });
+        return;
+      }
+
+      // 촬영 단계들 (FRONT, RIGHT, LEFT, BACK)
+      if (!cameraRef.current) {
+        console.log("No camera ref available");
+        return;
+      }
+
+      // 이미 이 단계에서 촬영한 이미지가 있으면 스킵
+      if (capturedImages[currentStep]) {
+        console.log(`Already captured image for ${currentStep}, moving to next step`);
+        if (currentStepInfo.nextStep) {
+          setCurrentStep(currentStepInfo.nextStep);
+        }
+        return;
+      }
+
+      // 실제 촬영
+      console.log(`Taking picture for step: ${currentStep}`);
+      const photo = await cameraRef.current.takePictureAsync({ 
+        quality: 0.7,
+        skipProcessing: true, // 처리 속도 향상
+      });
+
+      if (photo.uri) {
+        // 이미지 저장
+        setCapturedImages(prev => ({ ...prev, [currentStep]: photo.uri }));
+        
+        // 다음 단계로 이동
+        setTimeout(() => {
+          if (currentStepInfo.nextStep) {
+            setCurrentStep(currentStepInfo.nextStep);
+          }
+        }, 300); // 짧은 딜레이로 사용자에게 촬영 완료 피드백 제공
+      } else {
+        Alert.alert('Capture Error', 'Failed to capture image.');
+      }
+
     } catch (error) {
-      console.error('Pic error:', error);
-      Alert.alert('Error', 'Could not take pic.');
+      console.error(`Error during capture: ${error.message}`);
+      Alert.alert('Error', 'Failed to capture image. Please try again.');
+    } finally {
+      // 촬영 완료 후 상태 초기화
+      setTimeout(() => {
+        isCapturingRef.current = false;
+        setIsCapturing(false);
+      }, 500); // 버튼 연타 방지를 위한 짧은 딜레이
     }
   };
 
@@ -163,83 +224,6 @@ export default function CameraCaptureScreen() {
       [CAPTURE_STEPS.BACK]: null,
     });
     setCurrentStep(CAPTURE_STEPS.READY);
-  };
-
-  const handleReviewDone = () => {
-    setCurrentStep(CAPTURE_STEPS.DONE);
-    console.log('Review complete. Final images:', capturedImages);
-  };
-
-  const lastPressTime = useRef(0);
-
-
-  const handleMainButtonPress = async () => {
-    if (isActuallyCapturing.current) {
-      console.log("handleMainButtonPress: Capture already in progress. Ignoring.");
-      return;
-    }
-
-    // 2. 즉시 실제 촬영 플래그를 true로 설정하여 중복 진입 방지
-    isActuallyCapturing.current = true;
-    // 3. 시각적 피드백을 위해 상태 업데이트 (버튼 비활성화 등)
-    setIsCapturingVisual(true);
-
-    lastPressTime.current = now;
-    setIsCapturingVisual(true);
-
-    const currentStepInfo = STEP_DETAILS[currentStep];
-
-    if (currentStep === CAPTURE_STEPS.READY) {
-      if (currentStepInfo.nextStep) {
-        setCurrentStep(currentStepInfo.nextStep);
-      }
-      isActuallyCapturing.current = false;
-      setIsCapturingVisual(false);
-      return;
-    }
-
-    if (currentStep === CAPTURE_STEPS.REVIEW || currentStep === CAPTURE_STEPS.DONE) {
-        // console.log(`handleMainButtonPress: Called on ${currentStep} step, exiting. Resetting flags.`);
-      isActuallyCapturing.current = false;
-      setIsCapturingVisual(false);
-      return;
-    }
-    
-    if (!cameraRef.current) {
-      console.error("handleMainButtonPress: Camera ref is not set. Resetting flags.");
-      Alert.alert('Error', 'Camera not ready.');
-      isActuallyCapturing.current = false;
-      setIsCapturingVisual(false);
-      return;
-    }
-
-
-    try {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.7 });
-      console.log('Picture taken:', photo.uri ? 'Success' : 'Failed or no URI');
-      
-      if (photo && photo.uri) {
-        setCapturedImages(prev => {
-          const newImages = { ...prev, [currentStep]: photo.uri };
-          // console.log("handleMainButtonPress: Captured images updated:", newImages);
-          return newImages;
-        });
-        if (currentStepInfo.nextStep) {
-          setCurrentStep(currentStepInfo.nextStep);
-        } else {
-          setCurrentStep(CAPTURE_STEPS.REVIEW);
-        }
-      } else {
-        Alert.alert('Capture Error', 'Failed to get image URI.');
-      }
-    } catch (error) {
-      console.error('Pic error:', error);
-      Alert.alert('Error', `Failed to capture image: ${error.message}`);
-    } finally {
-      console.log('Finishing capture process, resetting flags.');
-      isActuallyCapturing.current = false;
-      setIsCapturingVisual(false);
-    }
   };
 
   if (!permission)
@@ -263,7 +247,7 @@ export default function CameraCaptureScreen() {
   // REVIEW 단계 UI
   if (currentStep === CAPTURE_STEPS.REVIEW) {
     return (
-    <LinearGradient
+      <LinearGradient
         colors={[Colors.wispyPink, Colors.wispyBlue]}
         style={{ flex: 1 }}
         start={{ x: 0, y: 0 }}
@@ -297,8 +281,9 @@ export default function CameraCaptureScreen() {
                 <Text style={[styles.utilityButtonText, { color: Colors.wispyRed }]}>Retake All</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => console.log('Next')}
+                onPress={handleMainButtonPress}
                 style={[styles.utilityButton, styles.reviewButton, styles.okButton]}
+                disabled={isCapturing}
               >
                 <Text style={[styles.utilityButtonText, { color: Colors.wispyTextBlue }]}>OK</Text>
               </TouchableOpacity>
@@ -347,7 +332,11 @@ export default function CameraCaptureScreen() {
             >
               {currentStep === CAPTURE_STEPS.READY ? (
                 <View style={styles.actionButtonsRowReady}>
-                  <CaptureButton onPress={handleTakePicture} title="OK" />
+                  <CaptureButton 
+                    onPress={handleMainButtonPress} 
+                    title="OK" 
+                    disabled={isCapturing}
+                  />
                 </View>
               ) : (
                 <View style={styles.actionButtonsRow}>
@@ -361,8 +350,8 @@ export default function CameraCaptureScreen() {
                           : 'off'
                       )
                     }
-                    style={styles.iconButton}
-                    disabled={isCapturingVisual}
+                    style={[styles.iconButton, isCapturing && styles.disabledIconButton]}
+                    disabled={isCapturing}
                   >
                     <Ionicons
                       name={
@@ -373,16 +362,23 @@ export default function CameraCaptureScreen() {
                           : 'flash-off-outline'
                       }
                       size={30}
-                      color="white"
+                      color={isCapturing ? "#666" : "white"}
                     />
                   </TouchableOpacity>
-                  <CaptureButton onPress={handleTakePicture} disabled={isCapturingVisual} />
+                  <CaptureButton 
+                    onPress={handleMainButtonPress} 
+                    disabled={isCapturing}
+                  />
                   <TouchableOpacity
                     onPress={() => setFacing(c => (c === 'back' ? 'front' : 'back'))}
-                    style={styles.iconButton}
-                    disabled={isCapturingVisual}
+                    style={[styles.iconButton, isCapturing && styles.disabledIconButton]}
+                    disabled={isCapturing}
                   >
-                    <Ionicons name="camera-reverse-outline" size={36} color={isCapturingVisual ? "grey" : "white"} />
+                    <Ionicons 
+                      name="camera-reverse-outline" 
+                      size={36} 
+                      color={isCapturing ? "#666" : "white"} 
+                    />
                   </TouchableOpacity>
                 </View>
               )}
@@ -432,8 +428,8 @@ const styles = StyleSheet.create({
   bottomButtonControlsWrapper: {
     backgroundColor: 'rgba(0,0,0,0.8)',
     paddingTop: 35,
+    bottom: -10,
     minHeight: windowHeight * 0.3,
-    zIndex: 5,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
@@ -451,7 +447,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  iconButton: { padding: 10, justifyContent: 'center', alignItems: 'center' },
+  iconButton: { 
+    padding: 10, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  disabledIconButton: {
+    opacity: 0.5,
+  },
   reviewScreenContainerStyle: {
     flex: 1,
     justifyContent: 'space-between',
