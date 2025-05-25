@@ -3,10 +3,11 @@ import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { fontAssets } from './constants/fonts';
 import IntroGenScreen from './screens/IntroGenScreen';
-import CharacterGenerateScreen from './screens/CharacterGenerateScreen';
+import GenWaitingScreen from './screens/GenWaitingScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import NameSpeakScreen from './screens/NameSpeakScreen';
+import NameSpeakScreenimage from './screens/NameSpeakScreenimage';
 import CameraCaptureScreen from './screens/CameraCaptureScreen';
+import Onboarding3Screen from './screens/Onboarding3Screen';
 
 export default function Appcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
@@ -15,7 +16,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <CameraCaptureScreen />
+      <NameSpeakScreenimage />
     </SafeAreaProvider>
   );
 }

@@ -5,7 +5,7 @@ import { Canvas } from '@react-three/fiber/native';
 import { useGLTF } from '@react-three/drei/native';
 import { Asset } from 'expo-asset';
 
-const modelPath = require('../assets/3D/flower.glb'); // Or '../assets/models/voxel_dog.glb'
+const modelPath = require('../assets/3D/2f79c600c88e331cefe7becc6f0f65b5.glb'); // Or '../assets/models/voxel_dog.glb'
 
 function ModelLoader({ modelUri }) {
   const { scene } = useGLTF(modelUri);
