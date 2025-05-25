@@ -1,27 +1,28 @@
 // NameSpeakScreen.js
-import React, { useRef } from 'react';
+import React, { useRef } from 'react'; // Added useRef
 import {
   View,
   Text,
   StyleSheet,
   Image,
+  // TouchableOpacity, // Replaced with Pressable for better animation control
   Dimensions,
   Platform,
   PixelRatio,
-  Animated,
-  Pressable
+  Animated, // Added Animated
+  Pressable // Added Pressable
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";
 import Fonts from '../constants/fonts';
-import Wisker from '../components/Wisker';
+import Wisker from '../components/Wisker'; // Added Wisker import
 
-// normalize function
+// normalize function (copied from GenWaitingScreen.js)
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const designScreenWidth = 375;
-const scaleFactor = SCREEN_WIDTH / designScreenWidth;
+const scaleFactor = SCREEN_WIDTH / designScreenWidth; // Renamed 'scale' to 'scaleFactor' to avoid conflict
 
 export function normalize(size) {
   const newSize = size * scaleFactor;
@@ -29,7 +30,7 @@ export function normalize(size) {
 }
 
 // Image assets
-const guardianimg = require('../assets/images/angelguardian.png');
+const guardianimg = require('../assets/images/angelguardian.png'); // Added guardianimg [fileName: GenWaitingScreen.js]
 const talkingFlowerImg = require('../assets/images/talking_flower.png');
 
 function NameSpeakScreen({ navigation }) {
@@ -37,13 +38,14 @@ function NameSpeakScreen({ navigation }) {
 
   const handleFlowerPress = () => {
     console.log('Talking flower action triggered (e.g., start STT).');
+    // This is where you'd eventually put the logic for "delivering the speech"
   };
 
   const onPressInFlower = () => {
     Animated.spring(scaleValue, {
-      toValue: 0.85,
+      toValue: 0.85, // Scale down slightly
       useNativeDriver: true,
-      friction: 4,
+      friction: 4, // Adjust for bounciness
       tension: 60,
     }).start();
   };
@@ -51,7 +53,7 @@ function NameSpeakScreen({ navigation }) {
   const onPressOutFlower = () => {
     Animated.spring(scaleValue, {
       toValue: 1,
-      friction: 3,
+      friction: 3, // Lower friction for more bounce on return
       tension: 40,
       useNativeDriver: true,
     }).start();
@@ -79,9 +81,17 @@ function NameSpeakScreen({ navigation }) {
         </View>
 
         <View style={styles.characterImageContainer}>
-          <Wisker source={guardianimg}/>
+          <Wisker source={guardianimg} style ={{    // iOS Shadow
+            shadowColor: '#00ff00', // 원하는 광선 색상
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.8,
+            shadowRadius: 20, // 광선이 퍼지는 범위
+            // Android Shadow
+            elevation: 20,
+          }}/>
         </View>
 
+        {/* Interactive area for speech bubble and talking flower */}
         <View style={styles.interactiveFlowerArea}>
           <View style={styles.speechBubbleWrapper}>
             <View style={styles.speechBubbleContent}>
@@ -94,12 +104,13 @@ function NameSpeakScreen({ navigation }) {
           </View>
 
           <Pressable
-            onPress={handleFlowerPress}
-            onPressIn={onPressInFlower}
-            onPressOut={onPressOutFlower}
+            onPress={handleFlowerPress} // Action on full press (tap)
+            onPressIn={onPressInFlower}  // Animation starts on press down
+            onPressOut={onPressOutFlower} // Animation reverses on press release
             style={styles.flowerTouchable}
           >
             <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+              {/* For GLB: Replace Image with your 3D model component here, wrapped by Animated.View */}
               <Image source={talkingFlowerImg} style={styles.flowerImageStyle} />
             </Animated.View>
           </Pressable>
