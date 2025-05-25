@@ -11,9 +11,7 @@ import { Platform, PixelRatio } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-
 const designScreenWidth = 375;
-
 const scale = SCREEN_WIDTH / designScreenWidth;
 
 export function normalize(size) {
@@ -25,12 +23,13 @@ export function normalize(size) {
   }
 }
 
-const CHARACTER_IMAGE_SIZE = windowWidth * 0.25; // 캐릭터 이미지 크기 (화면 너비의 23%)
+const CHARACTER_IMAGE_SIZE = windowWidth * 0.25; // 캐릭터 이미지 크기 (화면 너비의 25%)
 const BUBBLE_MAX_WIDTH = windowWidth * 0.7;    // 말풍선 최대 너비 (화면 너비의 70%)
 const BUBBLE_PADDING_HORIZONTAL = windowWidth * 0.06; // 말풍선 내부 가로 패딩
 const BUBBLE_PADDING_VERTICAL = windowWidth * 0.04;   // 말풍선 내부 세로 패딩
 const CHARACTER_OFFSET_X = -CHARACTER_IMAGE_SIZE * 0.3; // 캐릭터가 말풍선과 겹치는 X축 오프셋
 const BUBBLE_OFFSET_Y = CHARACTER_IMAGE_SIZE * 0.2;   // 말풍선이 캐릭터보다 아래로 내려오는 Y축 오프셋
+const TAIL_SIZE = windowWidth * 0.04; // 말풍선 꼬리 크기
 
 export default function InstructionText({ text, characterImageSource }) {
   if (!text && !characterImageSource) {
@@ -44,8 +43,13 @@ export default function InstructionText({ text, characterImageSource }) {
         <Image source={characterImageSource} style={styles.characterImage} />
       )}
       {text && (
-        <View style={styles.bubble}>
-          <Text style={styles.text}>{text}</Text>
+        <View style={styles.bubbleContainer}>
+          {/* 말풍선 꼬리 (왼쪽) */}
+          <View style={styles.bubbleTail} />
+          {/* 말풍선 본체 */}
+          <View style={styles.bubble}>
+            <Text style={styles.text}>{text}</Text>
+          </View>
         </View>
       )}
     </View>
@@ -66,6 +70,11 @@ const styles = StyleSheet.create({
     marginRight: CHARACTER_OFFSET_X, // 말풍선이 캐릭터 오른쪽을 덮도록
     zIndex: 0,                      // 말풍선보다 뒤
   },
+  bubbleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: BUBBLE_OFFSET_Y,     // 캐릭터 상단보다 약간 아래에서 시작
+  },
   bubble: {
     backgroundColor: Colors.wispyYellow,
     paddingHorizontal: BUBBLE_PADDING_HORIZONTAL,
@@ -73,13 +82,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     maxWidth: BUBBLE_MAX_WIDTH,
     zIndex: 1,                      // 캐릭터 이미지보다 위에
-    marginTop: BUBBLE_OFFSET_Y,     // 캐릭터 상단보다 약간 아래에서 시작하여 캐릭터가 더 위에 보이도록
-    // 그림자 효과
-    shadowColor: Colors.wispyBlack,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+  },
+  bubbleTail: {
+    width: 0,
+    height: 0,
+    borderTopWidth: normalize(10),
+    borderBottomWidth: normalize(10),
+    borderRightWidth: normalize(15),
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderRightColor: Colors.wispyYellow,
+    marginRight: -1, // 말풍선과 자연스럽게 연결
   },
   text: {
     color: Colors.wispyBlack,
