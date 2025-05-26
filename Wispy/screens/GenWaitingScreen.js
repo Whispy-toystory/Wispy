@@ -116,7 +116,7 @@ function GenWaitingScreen({ navigation }) {
     return () => {
       subscription.remove();
     };
-  }, [initializeTimer]); // initializeTimer를 의존성 배열에 추가
+  }, [initializeTimer]);
 
   useEffect(() => {
     if (!isTimerActive) return;
@@ -144,7 +144,7 @@ function GenWaitingScreen({ navigation }) {
 
   const handleButtonPress = () => {
     console.log('천사가 준비되었습니다! 다음 행동 수행...');
-    // 예: navigation.navigate('AngelReadyScreen');
+    // navigation.navigate('NameSpeakImageScreen');
   };
 
   return (

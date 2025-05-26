@@ -99,9 +99,9 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.suitHeavy,
     },
     characterImageContainer: {
-        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+        flex: 1.2,
     },
   inputContainer: {
     paddingTop: 10,

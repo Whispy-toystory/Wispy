@@ -1,11 +1,11 @@
 // Flower3DModelComponent.js
 import React, { Suspense, useRef, useEffect, useState } from 'react';
-import { Text } from 'react-native'; // For loading text
+import { Text } from 'react-native'; 
 import { Canvas } from '@react-three/fiber/native';
 import { useGLTF } from '@react-three/drei/native';
 import { Asset } from 'expo-asset';
 
-const modelPath = require('../assets/3D/2f79c600c88e331cefe7becc6f0f65b5.glb'); // Or '../assets/models/voxel_dog.glb'
+const modelPath = require('../assets/3D/2f79c600c88e331cefe7becc6f0f65b5.glb'); 
 
 function ModelLoader({ modelUri }) {
   const { scene } = useGLTF(modelUri);
@@ -15,7 +15,7 @@ function ModelLoader({ modelUri }) {
 
 export default function Flower3DModel() {
   const [modelUri, setModelUri] = useState(null);
-  const [error, setError] = useState(null); // Optional: for displaying errors outside canvas
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
     const loadAsset = async () => {
@@ -34,12 +34,10 @@ export default function Flower3DModel() {
   }, []);
 
   if (error) {
-    // Display React Native Text error *outside* the Canvas
     return <Text>{error}</Text>;
   }
 
   if (!modelUri) {
-    // Display React Native Text loading *outside* the Canvas
     return <Text>Loading 3D model URI...</Text>;
   }
 
@@ -48,7 +46,7 @@ export default function Flower3DModel() {
       <ambientLight intensity={Math.PI / 2} />
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-      {/* Change fallback to null or a 3D primitive */}
+      
       <Suspense fallback={null}>
         <ModelLoader modelUri={modelUri} />
       </Suspense>

@@ -1,4 +1,4 @@
-// screens/CameraCaptureScreen.js
+// screens/CameraScreen.js
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Alert, Dimensions, TouchableOpacity, Platform, Image, PixelRatio } from 'react-native';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';

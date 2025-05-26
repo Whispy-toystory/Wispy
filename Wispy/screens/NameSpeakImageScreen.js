@@ -16,11 +16,11 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SubAppLogo from '../components/SubAppLogo'; // Ensure this path is correct
-import Colors from "../constants/colors";     // Ensure this path is correct
-import Fonts from '../constants/fonts';       // Ensure this path is correct
-import Wisker from '../components/Wisker';     // Ensure this path is correct
-import { AudioModule, useAudioRecorder, RecordingPresets } from 'expo-audio'; // Updated imports
+import SubAppLogo from '../components/SubAppLogo';
+import Colors from "../constants/colors";  
+import Fonts from '../constants/fonts';       
+import Wisker from '../components/Wisker';     
+import { AudioModule, useAudioRecorder, RecordingPresets } from 'expo-audio'; 
 
 // normalize function
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -32,11 +32,12 @@ export function normalize(size) {
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 }
 
-// Image assets
-const guardianimg = require('../assets/images/angelguardian.png'); // Ensure this path is correct
-const talkingFlowerImg = require('../assets/images/talking_flower.png'); // Ensure this path is correct
+
+const guardianimg = require('../assets/images/angelguardian.png'); 
+const talkingFlowerImg = require('../assets/images/talking_flower.png'); 
 
 const MAX_CALLS = 5;
+const RECORDING_COOLDOWN_MS = 500; 
 
 const mockRecognizeSpeechFromUri = async (uri) => {
   console.log(`Mock STT: Simulating speech recognition for URI: ${uri}`);
@@ -56,12 +57,11 @@ function NameSpeakScreen({ navigation }) {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const appState = useRef(AppState.currentState);
   const pressInActiveRef = useRef(false); 
+  const lastRecordingEndTimeRef = useRef(0); 
 
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  // isUiLocked is a general state for disabling button and showing "busy" UI
   const [isUiLocked, setIsUiLocked] = useState(false); 
   const [hasPermission, setHasPermission] = useState(false);
-
   const [recordedURI, setRecordedURI] = useState(null); 
 
   const [guardianName, setGuardianName] = useState(null);
@@ -77,7 +77,6 @@ function NameSpeakScreen({ navigation }) {
     "Wow! Almost ready!\nNow tell the talking flower\nyour guardian angel's name!"
   );
 
-  // Request permissions on mount
   useEffect(() => {
     (async () => {
       try {
@@ -99,26 +98,29 @@ function NameSpeakScreen({ navigation }) {
     })();
   }, []);
 
-
   const resetUiAndStopRecording = async (feedbackMsg = "Press and hold the flower, then say the name.") => {
     console.log("resetUiAndStopRecording called. Feedback:", feedbackMsg);
-    pressInActiveRef.current = false; // Ensure press state is reset
+    pressInActiveRef.current = false;
     if (audioRecorder.isRecording) {
       console.log("resetUiAndStopRecording: audioRecorder is recording, attempting to stop.");
       try {
         await audioRecorder.stop();
         console.log("resetUiAndStopRecording: audioRecorder.stop() successful.");
       } catch (e) {
-        console.warn("resetUiAndStopRecording: Error stopping audioRecorder:", e.message);
+        if (e.message && (e.message.includes("already been unloaded") || e.message.includes("not recording") || e.message.includes("stop failed"))) {
+            console.log("resetUiAndStopRecording: audioRecorder was already stopped/unloaded or stop failed (native issue).");
+        } else {
+            console.warn("resetUiAndStopRecording: Error stopping audioRecorder:", e);
+        }
       }
     } else {
       console.log("resetUiAndStopRecording: audioRecorder was not recording.");
     }
-    // Reset URI and UI states
     setRecordedURI(null); 
     setIsUiLocked(false); 
     setFeedbackText(feedbackMsg);
-    setShowConfirmationPrompt(false); // Hide confirmation prompt on reset
+    setShowConfirmationPrompt(false);
+    lastRecordingEndTimeRef.current = Date.now();
   };
 
   useEffect(() => {
@@ -126,7 +128,7 @@ function NameSpeakScreen({ navigation }) {
       console.log(`AppState changed from ${appState.current} to ${nextAppState}`);
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
         console.log('App has come to the foreground!');
-        if (isUiLocked || audioRecorder.isRecording) { // If UI was locked or recorder was active
+        if (isUiLocked || audioRecorder.isRecording) { 
           console.log('App re-activated, resetting UI and stopping any active recording.');
           await resetUiAndStopRecording("Welcome back! Press and hold to try again.");
         }
@@ -140,14 +142,14 @@ function NameSpeakScreen({ navigation }) {
         console.log("Component unmounting, stopping recording.");
         audioRecorder.stop().catch(e => {
             if (e.message && (e.message.includes("already been unloaded") || e.message.includes("not recording") || e.message.includes("stop failed"))) {
-                console.log("Recording was already stopped/unloaded or failed to stop on unmount (likely native issue).");
+                console.log("Recording was already stopped/unloaded or failed to stop on unmount.");
             } else {
                 console.warn("Error stopping recording on unmount:", e);
             }
         });
       }
     };
-  }, [isUiLocked, audioRecorder.isRecording]); // Depend on relevant states
+  }, [isUiLocked, audioRecorder.isRecording]); 
 
   useEffect(() => {
     if (nameConfirmed && guardianName) {
@@ -174,7 +176,7 @@ function NameSpeakScreen({ navigation }) {
     console.log("startRecording: Attempting. pressInActiveRef:", pressInActiveRef.current);
     if (!pressInActiveRef.current) { 
         console.log("startRecording: Press no longer active. Aborting.");
-        await resetUiAndStopRecording(); // Reset if press was released prematurely
+        await resetUiAndStopRecording(); 
         return;
     }
     
@@ -195,8 +197,8 @@ function NameSpeakScreen({ navigation }) {
       console.log("startRecording: Starting actual recording with audioRecorder.record()...");
       await audioRecorder.record(); 
       console.log('Recording started. audioRecorder.isRecording:', audioRecorder.isRecording);
-      if (!audioRecorder.isRecording) { // Double check if hook updated its state
-          throw new Error("AudioRecorder failed to start recording (isRecording state is false).");
+      if (!audioRecorder.isRecording) { 
+          throw new Error("AudioRecorder failed to start recording (isRecording state is false after record call).");
       }
 
     } catch (err) {
@@ -215,8 +217,7 @@ function NameSpeakScreen({ navigation }) {
       return;
     }
     
-    // Keep isUiLocked true for "Thinking..." feedback
-    setFeedbackText('Got it! Thinking...');
+    setFeedbackText('Got it! Thinking...'); 
     try {
       console.log("stopRecording: Calling audioRecorder.stop()...");
       await audioRecorder.stop();
@@ -224,54 +225,68 @@ function NameSpeakScreen({ navigation }) {
       
       if (!uri) {
           console.error("stopRecording: Failed to get URI after stopping. Recording might not have saved.");
-          throw new Error("Failed to get recording URI.");
-      }
-      setRecordedURI(uri);
-      console.log('Recording stopped. URI:', uri);
+          setFeedbackText('Recording failed to save. Please try again.');
+      } else {
+        setRecordedURI(uri);
+        console.log('Recording stopped. URI:', uri);
+        const recognizedName = await mockRecognizeSpeechFromUri(uri);
 
-      const recognizedName = await mockRecognizeSpeechFromUri(uri);
-
-      if (!nameConfirmed) {
-        setCurrentAttemptText(recognizedName);
-        if (recognizedName && recognizedName.trim() !== "" && recognizedName !== "Error in STT (no URI)") {
-            setFeedbackText(`Did you say: "${recognizedName}"?`);
-            setShowConfirmationPrompt(true);
-        } else {
-             setFeedbackText("I didn't catch a name. Press and hold to try again.");
-             setShowConfirmationPrompt(false);
-        }
-      } else if (callCount < MAX_CALLS) {
-        if (recognizedName && recognizedName.trim() !== "" && recognizedName !== "Error in STT (no URI)"){
-            setCallCount(prevCount => prevCount + 1);
-        } else {
-            setFeedbackText(`I didn't catch that call clearly for ${guardianName}. Try calling again!`);
+        if (!nameConfirmed) {
+            setCurrentAttemptText(recognizedName);
+            if (recognizedName && recognizedName.trim() !== "" && recognizedName !== "Error in STT (no URI)") {
+                setFeedbackText(`Did you say: "${recognizedName}"?`);
+                setShowConfirmationPrompt(true);
+            } else {
+                 setFeedbackText("I didn't catch a name. Press and hold to try again.");
+                 setShowConfirmationPrompt(false);
+            }
+        } else if (callCount < MAX_CALLS) {
+            if (recognizedName && recognizedName.trim() !== "" && recognizedName !== "Error in STT (no URI)"){
+                setCallCount(prevCount => prevCount + 1);
+            } else {
+                setFeedbackText(`I didn't catch that call clearly for ${guardianName}. Try calling again!`);
+            }
         }
       }
     } catch (error) {
       console.error('Failed to stop or process recording:', error);
-      setFeedbackText('Oops! Something went wrong. Please try again.');
+      if (error.message && error.message.includes("stop failed")) {
+          setFeedbackText('Oops! Recording stop encountered an issue. Please try again.');
+      } else {
+          setFeedbackText('Oops! Something went wrong. Please try again.');
+      }
+      setShowConfirmationPrompt(false);
     } finally {
       console.log("stopRecording: finally block. Resetting UI lock.");
       setIsUiLocked(false); 
+      lastRecordingEndTimeRef.current = Date.now(); 
     }
   }
 
   const handleNameConfirmation = (isCorrect) => {
-    setShowConfirmationPrompt(false); // Always hide prompt after interaction
+    setShowConfirmationPrompt(false); 
     if (isCorrect) {
       setGuardianName(currentAttemptText);
       setNameConfirmed(true);
       setCallCount(0);
     } else {
-      // Don't call resetUiAndStopRecording here as it might stop an ongoing recording if user taps No quickly
       setFeedbackText('Okay, let\'s try that again. Press and hold the flower to say the name.');
       setCurrentAttemptText('');
     }
+    setIsUiLocked(false); 
+    lastRecordingEndTimeRef.current = Date.now();
   };
 
   const onPressInFlower = async () => {
-    console.log("onPressInFlower: Triggered. isUiLocked:", isUiLocked, "audioRecorder.isRecording:", audioRecorder.isRecording, "hasPermission:", hasPermission);
-    if (isUiLocked || audioRecorder.isRecording) { // Use audioRecorder.isRecording as a more direct check
+    console.log("onPressInFlower: Triggered. isUiLocked:", isUiLocked);
+
+    const now = Date.now();
+    if (now - lastRecordingEndTimeRef.current < RECORDING_COOLDOWN_MS) {
+        console.log("onPressInFlower: In cooldown period. Ignoring.");
+        return;
+    }
+
+    if (isUiLocked || audioRecorder.isRecording) { 
         console.warn("onPressInFlower: Already locked or recording. Ignoring.");
         return;
     }
@@ -288,34 +303,31 @@ function NameSpeakScreen({ navigation }) {
         const status = await AudioModule.requestRecordingPermissionsAsync();
         if(!status.granted) {
             Alert.alert("Permission Denied", "Microphone permission is required. Please enable it in app settings.");
-            resetUiAndStopRecording("Microphone permission needed."); // Reset UI
             pressInActiveRef.current = false; 
+            Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, friction: 3, tension: 40 }).start();
+            setFeedbackText("Microphone permission needed.");
             return;
         }
-        setHasPermission(true); // Update permission state
+        setHasPermission(true); 
     }
     
-    // setIsPreparing is removed, isUiLocked will handle the UI lock
     await startRecording(); 
   };
 
   const onPressOutFlower = async () => {
-    console.log("onPressOutFlower: Triggered. pressInActiveRef was:", pressInActiveRef.current, "audioRecorder.isRecording:", audioRecorder.isRecording);
+    console.log("onPressOutFlower: Triggered. pressInActiveRef was:", pressInActiveRef.current, "audioRecorder.isRecording:", audioRecorder.isRecording, "isUiLocked:", isUiLocked);
     Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, friction: 3, tension: 40 }).start();
     const wasPressActive = pressInActiveRef.current;
     pressInActiveRef.current = false; 
 
     if (callCount === MAX_CALLS && nameConfirmed) return;
 
-    // If the hook indicates it's recording, then stop it.
-    // Or if the UI was locked (isUiLocked) and the press was active (wasPressActive),
-    // it implies a recording was intended or in progress.
     if (audioRecorder.isRecording || (wasPressActive && isUiLocked)) { 
         await stopRecording();
     } else { 
         console.log("onPressOutFlower: No active recording to stop or UI was not in a recording-intended state. Resetting if UI was 'Listening...'.");
-        if (isUiLocked && feedbackText === 'Listening...') { // If UI was stuck in listening
-            resetUiAndStopRecording();
+        if (isUiLocked && feedbackText === 'Listening...') { 
+            await resetUiAndStopRecording(); 
         }
     }
   };
@@ -358,7 +370,7 @@ function NameSpeakScreen({ navigation }) {
             <View style={styles.speechBubblePointer} />
           </View>
 
-          {showConfirmationPrompt && !isUiLocked && ( // Show prompt if UI is not locked
+          {showConfirmationPrompt && !isUiLocked && ( 
             <View style={styles.confirmationContainer}>
               <TouchableOpacity
                 style={[styles.confirmationButton, styles.yesButton]}
@@ -378,7 +390,7 @@ function NameSpeakScreen({ navigation }) {
           <Pressable
             onPressIn={onPressInFlower}
             onPressOut={onPressOutFlower}
-            disabled={(callCount === MAX_CALLS && nameConfirmed) || isUiLocked } // Simplified disabled state
+            disabled={(callCount === MAX_CALLS && nameConfirmed) || isUiLocked } 
             style={styles.flowerTouchable}
           >
             <Animated.View style={[{ transform: [{ scale: scaleValue }] }, isUiLocked && styles.recordingFlower ]}>
@@ -392,56 +404,129 @@ function NameSpeakScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+
   gradientContainer: { flex: 1 },
+
   safeArea: { flex: 1 },
+
   headerContainer: {
-    flex: 0.1, justifyContent: 'flex-start', alignItems: 'flex-start',
-    paddingHorizontal: normalize(15), paddingTop: Platform.OS === 'android' ? normalize(20) : normalize(10),
+    flex: 0.1, 
+    justifyContent: 'flex-start', 
+    alignItems: 'flex-start',
+    paddingHorizontal: normalize(15), 
+    paddingTop: Platform.OS === 'android' ? normalize(20) : normalize(10),
   },
+
   instructionTextContainer: {
-    flex: 0.25, justifyContent: 'center', alignItems: 'center', paddingHorizontal: normalize(20),
+    flex: 0.25, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    paddingHorizontal: normalize(20),
   },
+
   mainText: {
-    textAlign: 'center', color: Colors.wispyWhite, fontSize: normalize(18),
-    lineHeight: normalize(28), fontFamily: Fonts.suitHeavy,
+    textAlign: 'center', 
+    color: Colors.wispyWhite, 
+    fontSize: normalize(18),
+    lineHeight: normalize(28), 
+    fontFamily: Fonts.suitHeavy,
   },
+
   characterImageContainer: {
-    flex: 0.35, justifyContent: 'center', alignItems: 'center', paddingBottom: normalize(10),
+    flex: 0.35, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    paddingBottom: normalize(10),
   },
+
   interactiveFlowerArea: {
-    flex: 0.3, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: normalize(20),
+    flex: 0.3, 
+    justifyContent: 'flex-end', 
+    alignItems: 'center', 
+    paddingBottom: normalize(20),
   },
-  speechBubbleWrapper: { alignItems: 'center', marginBottom: normalize(10), minHeight: normalize(60) },
+
+  speechBubbleWrapper: { 
+    alignItems: 'center', 
+    marginBottom: normalize(10), 
+    minHeight: normalize(60) 
+  },
+
   speechBubbleContent: {
-    backgroundColor: Colors.wispyButtonYellow, paddingHorizontal: normalize(18), paddingVertical: normalize(12),
-    borderRadius: normalize(15), maxWidth: '90%',
+    backgroundColor: Colors.wispyButtonYellow, 
+    paddingHorizontal: normalize(18), 
+    paddingVertical: normalize(12),
+    borderRadius: normalize(15), 
+    maxWidth: '90%',
   },
+
   speechBubbleText: {
-    textAlign: 'center', color: Colors.wispyTextBlue, fontSize: normalize(14),
-    fontFamily: Fonts.suitHeavy, lineHeight: normalize(18),
+    textAlign: 'center', 
+    color: Colors.wispyTextBlue, 
+    fontSize: normalize(14),
+    fontFamily: Fonts.suitHeavy, 
+    lineHeight: normalize(18),
   },
+
   speechBubblePointer: {
-    width: 0, height: 0, borderLeftWidth: normalize(10), borderRightWidth: normalize(10),
-    borderTopWidth: normalize(15), borderLeftColor: 'transparent', borderRightColor: 'transparent',
-    borderTopColor: Colors.wispyButtonYellow, alignSelf: 'center',
+    width: 0, 
+    height: 0, 
+    borderLeftWidth: normalize(10), 
+    borderRightWidth: normalize(10),
+    borderTopWidth: normalize(15), 
+    borderLeftColor: 'transparent', 
+    borderRightColor: 'transparent',
+    borderTopColor: Colors.wispyButtonYellow, 
+    alignSelf: 'center',
   },
+
   confirmationContainer: {
-    flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',
-    width: '85%', marginTop: normalize(5), marginBottom: normalize(10),
+    flexDirection: 'row', 
+    justifyContent: 'space-around', 
+    alignItems: 'center',
+    width: '85%', 
+    marginTop: normalize(5), 
+    marginBottom: normalize(10),
   },
+
   confirmationButton: {
-    paddingVertical: normalize(10), paddingHorizontal: normalize(15), borderRadius: normalize(20),
-    minWidth: normalize(110), alignItems: 'center', shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 1.41, elevation: 2,
+    paddingVertical: normalize(10), 
+    paddingHorizontal: normalize(15), 
+    borderRadius: normalize(20),
+    minWidth: normalize(110), 
+    alignItems: 'center', 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 }, 
+    shadowOpacity: 0.2, 
+    shadowRadius: 1.41, 
+    elevation: 2,
   },
-  yesButton: { backgroundColor: Colors.wispyGreen || '#4CAF50' },
-  noButton: { backgroundColor: Colors.wispyRed || '#F44336' },
+
+  yesButton: { 
+    backgroundColor: Colors.wispyGreen || '#4CAF50' 
+  },
+
+  noButton: { 
+    backgroundColor: Colors.wispyRed || '#F44336' 
+  },
+
   confirmationButtonText: {
-    color: Colors.wispyWhite || '#FFFFFF', fontFamily: Fonts.suitBold || Fonts.suitHeavy, fontSize: normalize(14),
+    color: Colors.wispyWhite || '#FFFFFF', 
+    fontFamily: Fonts.suitBold || Fonts.suitHeavy, 
+    fontSize: normalize(14),
   },
+
   flowerTouchable: {},
-  flowerImageStyle: { width: normalize(130), height: normalize(130) },
-  recordingFlower: { opacity: 0.7 }
+
+  flowerImageStyle: { 
+    width: normalize(130), 
+    height: normalize(130) 
+  },
+
+  recordingFlower: { 
+    opacity: 0.7 
+  }
+
 });
 
 export default NameSpeakScreen;
