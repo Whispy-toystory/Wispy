@@ -8,6 +8,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import NameSpeakScreenimage from './screens/NameSpeakImageScreen';
 import CameraCaptureScreen from './screens/CameraScreen';
 import Onboarding3Screen from './screens/Onboarding3Screen';
+import 'react-native-get-random-values';
+
 
 export default function Appcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
@@ -16,7 +18,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <GenWaitingScreen />
+      <NameSpeakScreenimage />
     </SafeAreaProvider>
   );
 }
