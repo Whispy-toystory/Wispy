@@ -9,6 +9,7 @@ import Onboarding1Screen from './screens/Onboarding1Screen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import Onboarding2Screen from './screens/Onboarding2Screen';
 import Onboarding3Screen from './screens/Onboarding3Screen';
+import BirthDayPickScreen from './screens/BirthDayPickScreen';
 
 export default function Appcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
@@ -17,7 +18,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <Onboarding3Screen />
+      <BirthDayPickScreen />
     </SafeAreaProvider>
   );
 }
