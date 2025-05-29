@@ -27,10 +27,10 @@ export function normalize(size) {
 export default function CaptureButton({ onPress, title, disabled }) {
   return (
     <TouchableOpacity
-      onPress={disabled ? () => {} : onPress} // disabled 상태일 때 onPress 막기 (이중 방어)
-      style={[styles.buttonContainer, disabled && styles.disabledStyle]} // 비활성화 시 스타일 적용
+      onPress={disabled ? () => {} : onPress}
+      style={[styles.buttonContainer, disabled && styles.disabledStyle]}
       disabled={disabled}
-      activeOpacity={disabled ? 1 : 0.7} // 비활성화 시 터치 피드백 없애거나, 기본 activeOpacity 사용
+      activeOpacity={disabled ? 1 : 0.7}
     >
       {title ? (
         <View style={[styles.buttonBody, styles.textButtonBody, title === "OK" ? styles.okButtonBody : {}, disabled && styles.disabledButtonVisuals /* 내부 UI 요소도 비활성화 효과 */]}>

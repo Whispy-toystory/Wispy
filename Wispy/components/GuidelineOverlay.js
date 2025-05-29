@@ -4,7 +4,6 @@ import { View, StyleSheet, Image, Dimensions } from 'react-native';
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
-// 예시: 뒷면 가이드라인 이미지가 있다면
 const GUIDELINE_IMAGES = {
   front: require('../assets/images/doll_front_guideline.png'),
   side_right: require('../assets/images/doll_right_guideline.png'),
@@ -13,7 +12,7 @@ const GUIDELINE_IMAGES = {
 };
 
 export default function GuidelineOverlay({ type }) {
-    if (!type) return null; // 가이드라인이 없는 단계 (예: REVIEW)
+    if (!type) return null; // 가이드라인이 없는 단계
 
     const guidelineImageSource = GUIDELINE_IMAGES[type];
 
@@ -40,7 +39,6 @@ export default function GuidelineOverlay({ type }) {
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1, // 이 부분은 CameraCaptureScreen의 overlayContainer에서 이미 flex로 공간을 차지하게 함
         position: 'absolute', // Camera 뷰 위에 겹치도록
         top: 0,
         left: 0,
@@ -48,26 +46,25 @@ const styles = StyleSheet.create({
         bottom: 0,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'rgba(255,0,0,0.1)', // 영역 확인용
     },
-    guidelineBox: { // 기본 테두리 스타일
+    guidelineBox: {
         borderWidth: 3,
         borderColor: 'rgba(255, 255, 255, 0.7)',
-        borderRadius: 15, // 모서리 둥글게
+        borderRadius: 15,
     },
-    frontGuideline: { // 정면 가이드라인 크기 및 위치 (예시)
+    frontGuideline: { 
         width: windowWidth * 1,
         height: windowHeight * 1,
     },
-    sideGuideline: { // 측면 가이드라인 크기 및 위치 (예시)
+    sideGuideline: { 
         width: windowWidth * 1,
         height: windowHeight * 1,
     },
-    backGuideline: { // 뒷면 가이드라인 크기 및 위치 (예시)
+    backGuideline: {
         width: windowWidth * 1,
         height: windowHeight * 1,
     },
-    guidelineImage: { // 이미지 가이드라인을 사용할 경우
+    guidelineImage: {
       opacity: 1, // 반투명하게
       paddingBottom: 30, // 아래쪽 여백
     },

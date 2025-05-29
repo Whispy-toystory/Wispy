@@ -37,7 +37,6 @@ export default function InstructionText({ text, characterImageSource }) {
   }
 
   return (
-    // 이 wrapper는 CameraCaptureScreen의 instructionWrapper 내에서 중앙 정렬됨
     <View style={styles.wrapper}>
       {characterImageSource && (
         <Image source={characterImageSource} style={styles.characterImage} />
@@ -59,21 +58,20 @@ export default function InstructionText({ text, characterImageSource }) {
 const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
-    alignItems: 'center', // 캐릭터와 말풍선 상단 정렬
-    alignSelf: 'center',     // 부모(instructionWrapper) 내에서 스스로 중앙 정렬
-    // backgroundColor: 'rgba(255,0,0,0.05)', // 영역 확인용
-  },
+    alignItems: 'center',
+    alignSelf: 'center',     
+  }, 
   characterImage: {
     width: CHARACTER_IMAGE_SIZE,
     height: CHARACTER_IMAGE_SIZE,
     resizeMode: 'contain',
-    marginRight: CHARACTER_OFFSET_X, // 말풍선이 캐릭터 오른쪽을 덮도록
-    zIndex: 0,                      // 말풍선보다 뒤
+    marginRight: CHARACTER_OFFSET_X, 
+    zIndex: 0,                      
   },
   bubbleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: BUBBLE_OFFSET_Y,     // 캐릭터 상단보다 약간 아래에서 시작
+    marginTop: BUBBLE_OFFSET_Y,    
   },
   bubble: {
     backgroundColor: Colors.wispyYellow,
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
     paddingVertical: BUBBLE_PADDING_VERTICAL,
     borderRadius: 20,
     maxWidth: BUBBLE_MAX_WIDTH,
-    zIndex: 1,                      // 캐릭터 이미지보다 위에
+    zIndex: 1,                     
   },
   bubbleTail: {
     width: 0,
@@ -92,13 +90,13 @@ const styles = StyleSheet.create({
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
     borderRightColor: Colors.wispyYellow,
-    marginRight: -1, // 말풍선과 자연스럽게 연결
+    marginRight: -1, 
   },
   text: {
     color: Colors.wispyBlack,
     fontFamily: Fonts.suitBold,
     fontSize: normalize(18), 
     textAlign: 'left',
-    lineHeight: windowWidth * 0.055, // 줄 간격 비율
+    lineHeight: windowWidth * 0.055,
   },
 });
