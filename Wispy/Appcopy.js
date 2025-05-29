@@ -9,6 +9,7 @@ import NameSpeakScreenimage from './screens/NameSpeakImageScreen';
 import CameraCaptureScreen from './screens/CameraScreen';
 import Onboarding3Screen from './screens/Onboarding3Screen';
 import BirthDayPickScreen from './screens/BirthDayPickScreen';
+import OnboardingCompleteScreen from './screens/OnboardingCompleteScreen';
 
 export default function Appcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
@@ -17,7 +18,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <BirthDayPickScreen />
+      <OnboardingCompleteScreen />
     </SafeAreaProvider>
   );
 }
