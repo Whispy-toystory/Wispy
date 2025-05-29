@@ -9,8 +9,6 @@ import PrimaryButton from "../components/PrimaryButton";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // utils/normalizeText.js
-// import { Dimensions, Platform, PixelRatio } from 'react-native';
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 

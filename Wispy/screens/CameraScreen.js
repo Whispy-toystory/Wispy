@@ -11,7 +11,6 @@ import Colors from '../constants/colors';
 
 const DEFAULT_CHARACTER_IMAGE = require('../assets/images/Wisker.png');
 
-// 하위 컴포넌트
 import StepIndicator from '../components/StepIndicator';
 import GuidelineOverlay from '../components/GuidelineOverlay';
 import InstructionText from '../components/InstructionText';
@@ -28,7 +27,7 @@ export function normalize(size) {
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 }
 
-// 촬영 단계를 정의합니다.
+// 촬영 단계
 const CAPTURE_STEPS = {
   READY: 'READY',
   FRONT: 'FRONT',
@@ -124,9 +123,7 @@ export default function CameraCaptureScreen() {
     })();
   }, [permission, requestPermission]);
 
-  // 메인 버튼 핸들러 - 모든 단계에서 사용
   const handleMainButtonPress = async () => {
-    // 이미 촬영 중이면 무시
     if (isCapturingRef.current) {
       console.log("Already capturing, ignoring button press");
       return;
@@ -174,7 +171,6 @@ export default function CameraCaptureScreen() {
         return;
       }
 
-      // 이미 이 단계에서 촬영한 이미지가 있으면 스킵
       if (capturedImages[currentStep]) {
         console.log(`Already captured image for ${currentStep}, moving to next step`);
         if (currentStepInfo.nextStep) {
@@ -194,7 +190,6 @@ export default function CameraCaptureScreen() {
         // 이미지 저장
         setCapturedImages(prev => ({ ...prev, [currentStep]: photo.uri }));
         
-        // 다음 단계로 이동
         setTimeout(() => {
           if (currentStepInfo.nextStep) {
             setCurrentStep(currentStepInfo.nextStep);
@@ -491,7 +486,7 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   utilityButtonText: {
-    color: 'white',
+    color: Colors.wispyWhite,
     fontFamily: Fonts.suitHeavy,
     fontSize: normalize(22),
     fontWeight: '500',

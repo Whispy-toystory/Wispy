@@ -20,7 +20,6 @@
     "expo-gl": "~15.1.5",
     "expo-linear-gradient": "~14.1.4",
     "expo-status-bar": "~2.2.3",
-    "microsoft-cognitiveservices-speech-sdk": "^1.44.0",
     "react": "19.0.0",
     "react-native": "0.79.2",
     "react-native-get-random-values": "^1.11.0",

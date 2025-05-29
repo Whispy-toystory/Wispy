@@ -144,7 +144,6 @@ function GenWaitingScreen({ navigation }) {
 
   const handleButtonPress = () => {
     console.log('천사가 준비되었습니다! 다음 행동 수행...');
-    // navigation.navigate('NameSpeakImageScreen');
   };
 
   return (

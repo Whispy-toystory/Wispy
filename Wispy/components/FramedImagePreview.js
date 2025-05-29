@@ -4,7 +4,7 @@ import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 
-const FRAME_IMAGE = require('../assets/images/photoframe.png'); // 실제 경로 확인
+const FRAME_IMAGE = require('../assets/images/photoframe.png');
 const { width: windowWidth } = Dimensions.get('window');
 
 // 프레임 545 * 845 내부 사진 영역 460 * 620 상단 여백 75 좌우 여백 40 하단 여백 160
@@ -78,16 +78,15 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     position: 'absolute',
-    left: 0, // photoLeft와 동일하게 설정하여 사진 영역과 좌우 정렬 맞춤
-    right: 0, // photoLeft와 동일하게 설정하여 사진 영역과 좌우 정렬 맞춤
-    justifyContent: 'center', // 텍스트 수직 중앙 정렬
-    alignItems: 'center',     // 텍스트 수평 중앙 정렬
-    // backgroundColor: 'rgba(0,255,0,0.1)', // 영역 확인용
+    left: 0,
+    right: 0,
+    justifyContent: 'center', 
+    alignItems: 'center',     
   },
   label: {
-    fontFamily: Fonts.suitExtraBold, // 폰트 패밀리
-    fontSize: windowWidth * 0.032, // 프레임 크기에 맞춰 조절
-    color: Colors.wispyBlack,    // 프레임과 어울리는 색상
+    fontFamily: Fonts.suitExtraBold, 
+    fontSize: windowWidth * 0.032, 
+    color: Colors.wispyBlack,
     textAlign: 'center',
   },
 });
