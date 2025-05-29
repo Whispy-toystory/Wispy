@@ -4,6 +4,7 @@ const Colors = {
     wispyYellow: '#F1EC7A',
     wispyNavy: '#1D4D9F',
     wispyOrange: '#F08838',
+    wispyGreen: '#4fc253',
     wispyBlack: '#000000',
     wispyWhite: '#FFFFFF',
     wispyButtonYellow: '#F1E150',

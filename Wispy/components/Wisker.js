@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Image, StyleSheet, Dimensions } from 'react-native';
 
-const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width;
 
 const defaultWiskerImageSource = require('../assets/images/Wisker.png');
 
@@ -40,9 +40,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   defaultImage: {
-    height: screenHeight * 0.5,
+    width: screenWidth * 0.7,
     // width: screenWidth * 0.5,
-    aspectRatio: 1,
     // marginBottom: 10,
   },
 });
