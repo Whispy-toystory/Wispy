@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  // Image, // Will be replaced by the 3D model
   Dimensions,
   Platform,
   PixelRatio,
@@ -18,8 +17,7 @@ import Colors from "../constants/colors";
 import Fonts from '../constants/fonts';
 import Wisker from '../components/Wisker';
 
-// Import your 3D model component (adjust path if necessary)
-import Flower3DModel from '../components/Flower3DModelComponent'; // Assuming you create this
+import Flower3DModel from '../components/Flower3DModelComponent'; 
 
 // normalize function
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -33,7 +31,6 @@ export function normalize(size) {
 
 // Image assets
 const guardianimg = require('../assets/images/angelguardian.png');
-// const talkingFlowerImg = require('../assets/images/talking_flower.png'); // No longer needed if using GLB
 
 function NameSpeakScreen({ navigation }) {
   const scaleValue = useRef(new Animated.Value(1)).current;
@@ -45,7 +42,7 @@ function NameSpeakScreen({ navigation }) {
   const onPressInFlower = () => {
     Animated.spring(scaleValue, {
       toValue: 0.85,
-      useNativeDriver: true, // May need testing with GLView, often works for transforms
+      useNativeDriver: true,
       friction: 4,
       tension: 60,
     }).start();
@@ -155,7 +152,7 @@ const styles = StyleSheet.create({
   },
   speechBubbleWrapper: {
     alignItems: 'center',
-    marginBottom: -normalize(20), // Pulls subsequent element (flower) up
+    marginBottom: -normalize(20), 
   },
   speechBubbleContent: {
     backgroundColor: Colors.wispyButtonYellow,
@@ -185,16 +182,11 @@ const styles = StyleSheet.create({
   flowerTouchable: {
     marginTop: normalize(15),
   },
-  // This style was for the Image, now it's for the container of the 3D model
-  flowerModelContainer: { // New name for clarity
+  flowerModelContainer: { 
     width: normalize(150),
     height: normalize(150),
-    // backgroundColor: 'transparent', // Or a debug color like 'rgba(255,0,0,0.2)'
   },
-  // flowerImageStyle: { // No longer directly used if GLB is primary
-  //   width: normalize(150),
-  //   height: normalize(150),
-  // },
+
 });
 
 export default NameSpeakScreen;

@@ -20,15 +20,12 @@ import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";
 import Fonts from '../constants/fonts';
 import Wisker from '../components/Wisker';
-// expo-audio의 useAudioRecorder와 AudioModule을 사용합니다.
 import { AudioModule, useAudioRecorder, RecordingPresets } from 'expo-audio';
-// 녹음된 오디오 재생을 위해 expo-av의 Audio를 사용합니다.
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { decode as atob } from 'base-64';
 
-// Azure Speech Service 설정 (환경 변수 사용 권장)
-// 중요: 실제 프로덕션 환경에서는 키를 하드코딩하지 마세요. 환경 변수를 사용하세요.
+// Azure Speech Service 설정
 const AZURE_SPEECH_KEY = process.env.EXPO_PUBLIC_AZURE_SPEECH_KEY;
 const AZURE_SPEECH_REGION = process.env.EXPO_PUBLIC_AZURE_SPEECH_REGION;
 
@@ -48,9 +45,7 @@ const talkingFlowerImg = require('../assets/images/talking_flower.png');
 const MAX_CALLS = 5;
 const RECORDING_COOLDOWN_MS = 500;
 
-// RecordingPresets.HIGH_QUALITY는 .m4a를 생성하므로,
-// Audio.Recording 클래스를 직접 사용하고 RecordingPresets.HIGH_QUALITY를 전달합니다.
-// 이 프리셋은 Android에서 AAC 인코딩된 .m4a를 생성합니다.
+
 
 function NameSpeakScreen({ navigation }) {
   const scaleValue = useRef(new Animated.Value(1)).current;
@@ -58,15 +53,13 @@ function NameSpeakScreen({ navigation }) {
   const pressInActiveRef = useRef(false);
   const lastRecordingEndTimeRef = useRef(0);
 
-  // Audio.Recording 인스턴스를 직접 관리합니다.
-  const [currentRecording, setCurrentRecording] = useState(null); // useAudioRecorder 대신 직접 관리
-  // 녹음 상태를 UI에 반영하기 위한 새로운 상태
+
+  const [currentRecording, setCurrentRecording] = useState(null); 
   const [isAudioRecordingActive, setIsAudioRecordingActive] = useState(false);
   console.log("초기 currentRecording 인스턴스:", currentRecording);
   console.log("설정에서 가져온 Azure Speech Key:", AZURE_SPEECH_KEY);
   console.log("설정에서 가져온 Azure Speech Region:", AZURE_SPEECH_REGION);
 
-  // 재생을 위한 Audio.Sound 인스턴스 상태
   const [sound, setSound] = useState(null);
   const [hasRecordingToPlay, setHasRecordingToPlay] = useState(false);
 
@@ -114,31 +107,30 @@ function NameSpeakScreen({ navigation }) {
     console.log("resetUiAndStopRecording 호출됨. 피드백:", feedbackMsg);
     pressInActiveRef.current = false;
 
-    // currentRecording 인스턴스가 유효하고 녹음 중인지 확인
     if (currentRecording) {
       try {
         const status = await currentRecording.getStatusAsync();
         if (status.isRecording) {
             console.log("resetUiAndStopRecording: currentRecording이 녹음 중이므로 중지를 시도합니다.");
-            await currentRecording.stopAndUnloadAsync(); // stopAndUnloadAsync 사용
+            await currentRecording.stopAndUnloadAsync();
             console.log("resetUiAndStopRecording: currentRecording.stopAndUnloadAsync() 성공.");
         } else if (status.isLoaded) {
-            // 녹음 중이 아니지만 로드되어 있다면 언로드
+            
             console.log("resetUiAndStopRecording: currentRecording이 로드되어 있지만 녹음 중이 아님. 언로드 시도.");
             await currentRecording.unloadAsync();
         }
       } catch (e) {
         console.warn("resetUiAndStopRecording: currentRecording 중지/언로드 중 오류:", e.message);
       } finally {
-        setCurrentRecording(null); // 항상 currentRecording 인스턴스 초기화
+        setCurrentRecording(null);
       }
     } else {
       console.log("resetUiAndStopRecording: currentRecording이 유효하지 않습니다. 중지 건너뜀.");
     }
-    setRecordedURI(null); // 이전에 저장된 URI를 항상 초기화
-    setHasRecordingToPlay(false); // 재생 가능 상태 초기화
+    setRecordedURI(null); 
+    setHasRecordingToPlay(false);
     setIsUiLocked(false);
-    setIsAudioRecordingActive(false); // 녹음 상태 비활성화
+    setIsAudioRecordingActive(false); 
     setFeedbackText(feedbackMsg);
     setShowConfirmationPrompt(false);
     lastRecordingEndTimeRef.current = Date.now();
@@ -149,7 +141,6 @@ function NameSpeakScreen({ navigation }) {
       console.log(`앱 상태 변경: ${appState.current} -> ${nextAppState}`);
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
         console.log('앱이 포그라운드로 돌아왔습니다!');
-        // currentRecording의 유효성을 확인한 후 isRecording에 접근
         if (isUiLocked || (currentRecording && (await currentRecording.getStatusAsync()).isRecording)) {
           console.log('앱 재활성화, UI 리셋 및 활성 녹음 중지.');
           await resetUiAndStopRecording("Welcome back! Press and hold to try again.");
@@ -169,26 +160,23 @@ function NameSpeakScreen({ navigation }) {
               console.log("컴포넌트 언마운트 중, 녹음 중지 및 언로드.");
               await currentRecording.stopAndUnloadAsync();
             } else if (status.isLoaded) {
-              // 녹음은 안 하지만 로드되어 있다면 언로드
               console.log("컴포넌트 언마운트 중, 로드된 녹음 언로드.");
               await currentRecording.unloadAsync();
             }
           } catch (e) {
             console.warn("언마운트 시 녹음 중지/언로드 중 오류:", e.message);
           } finally {
-            // 언마운트 시에도 currentRecording 인스턴스를 null로 설정하여 참조 해제
             setCurrentRecording(null);
-            setIsAudioRecordingActive(false); // 언마운트 시 녹음 상태 비활성화
+            setIsAudioRecordingActive(false); 
           }
         })();
       }
-      // 컴포넌트 언마운트 시 재생 중인 사운드 언로드
       if (sound) {
         console.log("컴포넌트 언마운트 중, 사운드 언로드.");
         sound.unloadAsync().catch(e => console.warn("언마운트 시 사운드 언로드 중 오류:", e.message));
       }
     };
-  }, [isUiLocked, currentRecording, sound]); // currentRecording, sound를 의존성 배열에 추가
+  }, [isUiLocked, currentRecording, sound]); 
 
   useEffect(() => {
     if (nameConfirmed && guardianName) {
@@ -215,7 +203,7 @@ function NameSpeakScreen({ navigation }) {
     console.log("startRecording 호출됨. pressInActiveRef:", pressInActiveRef.current);
     if (!pressInActiveRef.current) {
         console.log("startRecording: 버튼 누름 상태 아님. 중단.");
-        setIsUiLocked(false); // UI 잠금 상태 해제
+        setIsUiLocked(false); 
         return;
     }
 
@@ -223,22 +211,19 @@ function NameSpeakScreen({ navigation }) {
     setFeedbackText('Listening...');
     setShowConfirmationPrompt(false);
     try {
-      // 재생 중인 사운드가 있다면 중지 및 언로드
       if (sound) {
         await sound.unloadAsync();
         setSound(null);
       }
 
-      // 새 Audio.Recording 인스턴스 생성 및 설정
       const newRecording = new Audio.Recording();
       console.log("startRecording: new Audio.Recording() 인스턴스 생성.");
       
       console.log("startRecording: newRecording.prepareToRecordAsync() 호출 시도...");
-      // RecordingPresets.HIGH_QUALITY를 사용하여 .m4a (AAC)로 녹음합니다.
-      // KEY CHANGE: Android extension을 .m4a로 명시적으로 설정하여 오류 해결
+     
       await newRecording.prepareToRecordAsync({
         android: {
-          extension: '.m4a', // .wav 대신 .m4a로 변경
+          extension: '.m4a', 
           outputFormat: AudioModule.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
           audioEncoder: AudioModule.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
           sampleRate: 16000,
@@ -246,7 +231,7 @@ function NameSpeakScreen({ navigation }) {
           bitsPerSample: 16,
         },
         ios: {
-          extension: '.m4a', // iOS도 .m4a로 변경 (CAF도 가능하지만 일관성을 위해)
+          extension: '.m4a', 
           audioQuality: AudioModule.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
           sampleRate: 16000,
           numberOfChannels: 1,
@@ -266,15 +251,14 @@ function NameSpeakScreen({ navigation }) {
 
       console.log("startRecording: newRecording.startAsync() 호출 시도...");
       await newRecording.startAsync();
-      setCurrentRecording(newRecording); // 새로 생성된 recording 인스턴스를 상태에 저장
-      setIsAudioRecordingActive(true); // 녹음 시작 시 상태 활성화
+      setCurrentRecording(newRecording); 
+      setIsAudioRecordingActive(true); 
       console.log('녹음 실제 시작됨. currentRecording.getURI():', newRecording.getURI());
       console.log('녹음 실제 시작됨. (await newRecording.getStatusAsync()).isRecording:', (await newRecording.getStatusAsync()).isRecording);
       
-      // isRecording 상태는 getStatusAsync()를 통해 확인하는 것이 더 정확합니다.
       if (!(await newRecording.getStatusAsync()).isRecording) {
           console.warn("newRecording.startAsync()가 완료되었지만 isRecording이 false입니다. 문제가 있을 수 있습니다.");
-          await resetUiAndStopRecording('Failed to start recording. Please try again.'); // 시작 실패 시 명시적 리셋 추가
+          await resetUiAndStopRecording('Failed to start recording. Please try again.'); 
       }
     } catch (err) {
       console.error('녹음 세션 시작 실패 (prepareToRecordAsync 또는 startAsync 에서 오류):', err);
@@ -287,21 +271,18 @@ function NameSpeakScreen({ navigation }) {
     }
   }
 
-  // Azure Speech REST API를 사용하여 음성 인식 수행
   async function recognizeSpeechWithAzureRestApi(audioFileUri) {
     if (!audioFileUri) {
       console.warn("Azure REST STT: 오디오 파일 URI가 없습니다.");
       return "Error: No audio URI provided.";
     }
-    // process.env.EXPO_PUBLIC_AZURE_SPEECH_KEY 등의 환경 변수 확인으로 변경
     if (!AZURE_SPEECH_KEY || AZURE_SPEECH_KEY === "YOUR_AZURE_SPEECH_KEY_PLACEHOLDER" || !AZURE_SPEECH_REGION || AZURE_SPEECH_REGION === "YOUR_AZURE_SPEECH_REGION_PLACEHOLDER") {
       Alert.alert("Azure API Error", "Azure Speech API Key or Region is not configured. Please check your .env file and rebuild the app.");
       console.error("Azure API 키/지역이 설정되지 않았거나 플레이스홀더를 사용 중입니다. 키:", AZURE_SPEECH_KEY, "지역:", AZURE_SPEECH_REGION);
       return "Error: Azure API not configured.";
     }
 
-    // 언어 설정 (이 부분은 사용자가 말하는 언어에 맞춰야 합니다)
-    const language = "ko-KR"; // 한국어 설정
+    const language = "ko-KR"; 
     // Azure REST STT 엔드포인트
     const endpoint = `https://${AZURE_SPEECH_REGION}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=${language}&format=detailed`;
 
@@ -322,8 +303,7 @@ function NameSpeakScreen({ navigation }) {
       }
 
 
-      // KEY CHANGE: .m4a 파일 형식에 맞게 Content-Type을 audio/mpeg로 변경
-      let contentType = 'audio/mpeg'; // .m4a (AAC) 파일 형식에 맞게 변경
+      let contentType = 'audio/mpeg'; 
       console.log("선택된 Content-Type:", contentType);
       console.log("Azure Endpoint:", endpoint);
 
@@ -342,7 +322,7 @@ function NameSpeakScreen({ navigation }) {
         method: 'POST',
         headers: {
           'Ocp-Apim-Subscription-Key': AZURE_SPEECH_KEY,
-          'Content-Type': contentType, // 변경된 Content-Type 적용
+          'Content-Type': contentType,
           'Accept': 'application/json;text/xml',
         },
         body: bytes.buffer,
@@ -370,7 +350,7 @@ function NameSpeakScreen({ navigation }) {
         return responseJson.DisplayText || "";
       } else if (responseJson.RecognitionStatus === "NoMatch") {
         console.warn("Azure STT: NoMatch. Speech could not be recognized. Response:", responseJson);
-        return ""; // No speech could be recognized
+        return "";
       } else {
         console.error("Azure REST STT Recognition Error:", responseJson.RecognitionStatus, responseJson);
         Alert.alert("Recognition Error", `Azure could not recognize speech: ${responseJson.RecognitionStatus}. Please try again.`);
@@ -389,7 +369,6 @@ function NameSpeakScreen({ navigation }) {
 
 
   async function stopRecording() {
-    // currentRecording 객체가 유효하고 녹음 중인지 확인
     const isCurrentlyRecording = currentRecording && (await currentRecording.getStatusAsync()).isRecording;
     console.log("stopRecording 호출됨. isCurrentlyRecording:", isCurrentlyRecording);
     pressInActiveRef.current = false;
@@ -400,30 +379,27 @@ function NameSpeakScreen({ navigation }) {
       return;
     }
 
-    // KEY CHANGE: currentRecording.stopAndUnloadAsync() 호출 전에 URI를 가져옵니다.
-    const uriToProcess = currentRecording.getURI(); // Audio.Recording의 getURI() 사용
+    const uriToProcess = currentRecording.getURI(); 
     console.log('녹음 중지 전 currentRecording.getURI() 확인:', uriToProcess);
 
     try {
       console.log("stopRecording: currentRecording.stopAndUnloadAsync() 호출 중...");
-      await currentRecording.stopAndUnloadAsync(); // 이 호출은 네이티브 리소스를 해제합니다.
+      await currentRecording.stopAndUnloadAsync(); 
       console.log("stopRecording: currentRecording.stopAndUnloadAsync() 성공.");
       
-      // stopAndUnloadAsync 호출 후에는 currentRecording 인스턴스를 null로 설정하여 참조 해제
       setCurrentRecording(null); 
-      setIsAudioRecordingActive(false); // 녹음 중지 시 상태 비활성화
+      setIsAudioRecordingActive(false);
 
-      if (!uriToProcess || typeof uriToProcess !== 'string' || !uriToProcess.startsWith('file://')) { // URI 유효성 검사 추가
+      if (!uriToProcess || typeof uriToProcess !== 'string' || !uriToProcess.startsWith('file://')) { 
         console.error("stopRecording: 유효한 URI 가져오기 실패. 녹음이 저장되지 않았을 수 있음. URI:", uriToProcess);
         setFeedbackText('Recording failed to save or URI is invalid. Please try again.');
         setRecordedURI(null);
-        setHasRecordingToPlay(false); // 재생 불가
+        setHasRecordingToPlay(false); 
       } else {
         setRecordedURI(uriToProcess);
-        setHasRecordingToPlay(true); // 재생 가능
-        // REST API 함수 호출
-        const recognizedName = await recognizeSpeechWithAzureRestApi(uriToProcess); // REST API 버전 사용
-
+        setHasRecordingToPlay(true); 
+        
+        const recognizedName = await recognizeSpeechWithAzureRestApi(uriToProcess); 
         if (!nameConfirmed) {
           setCurrentAttemptText(recognizedName);
           if (recognizedName && recognizedName.trim() !== "" && !recognizedName.startsWith("Error:")) {
@@ -434,7 +410,6 @@ function NameSpeakScreen({ navigation }) {
             setShowConfirmationPrompt(false);
           }
         } else if (callCount < MAX_CALLS) {
-            // 더 견고한 조건으로 업데이트
             if (recognizedName && recognizedName.trim() !== "" && !recognizedName.startsWith("Error:") && guardianName && recognizedName.toLowerCase().includes(guardianName.toLowerCase())) {
                 setCallCount(prevCount => prevCount + 1);
             } else if (recognizedName && !recognizedName.startsWith("Error:")) {
@@ -455,10 +430,10 @@ function NameSpeakScreen({ navigation }) {
       }
       setFeedbackText(feedback);
       setShowConfirmationPrompt(false);
-      setRecordedURI(null); // 오류 발생 시 URI 초기화
-      setHasRecordingToPlay(false); // 재생 불가
-      setCurrentRecording(null); // 오류 발생 시에도 currentRecording 인스턴스 초기화
-      setIsAudioRecordingActive(false); // 오류 발생 시 녹음 상태 비활성화
+      setRecordedURI(null);
+      setHasRecordingToPlay(false);
+      setCurrentRecording(null); 
+      setIsAudioRecordingActive(false);
     } finally {
       console.log("stopRecording: finally 블록. UI 잠금 리셋.");
       setIsUiLocked(false);
@@ -466,14 +441,12 @@ function NameSpeakScreen({ navigation }) {
     }
   }
 
-  // 녹음된 오디오를 재생하는 함수
   async function playSound() {
     if (!recordedURI) {
       console.warn("재생할 URI가 없습니다.");
       return;
     }
     if (sound) {
-      // 이미 사운드가 로드되어 있다면 언로드
       await sound.unloadAsync();
       setSound(null);
     }
@@ -503,14 +476,13 @@ function NameSpeakScreen({ navigation }) {
       setCurrentAttemptText('');
     }
     setIsUiLocked(false);
-    lastRecordingEndTimeRef.current = Date.now(); // Date.now()로 수정
+    lastRecordingEndTimeRef.current = Date.now(); 
   };
 
-  const onPressInFlower = async () => { // async 추가
+  const onPressInFlower = async () => { 
     const now = Date.now();
     if (now - lastRecordingEndTimeRef.current < RECORDING_COOLDOWN_MS) return;
-    // currentRecording 객체가 null이 아니고, 녹음 중인지 확인
-    if (isUiLocked || isAudioRecordingActive) return; // isAudioRecordingActive 사용
+    if (isUiLocked || isAudioRecordingActive) return;
     if (callCount === MAX_CALLS && nameConfirmed) {
         setFeedbackText(`${guardianName} is already waking up!`);
         return;
@@ -520,7 +492,7 @@ function NameSpeakScreen({ navigation }) {
     Animated.spring(scaleValue, { toValue: 0.85, useNativeDriver: true, friction: 4, tension: 60 }).start();
 
     if (!hasPermission) {
-        const status = await AudioModule.requestRecordingPermissionsAsync(); // AudioModule 사용
+        const status = await AudioModule.requestRecordingPermissionsAsync(); 
         if(!status.granted) {
             Alert.alert("Permission Denied", "Microphone permission is required. Please enable it in app settings.");
             pressInActiveRef.current = false;
@@ -533,15 +505,15 @@ function NameSpeakScreen({ navigation }) {
     await startRecording();
   };
 
-  const onPressOutFlower = async () => { // async 추가
+  const onPressOutFlower = async () => { 
     Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true, friction: 3, tension: 40 }).start();
     const wasPressActive = pressInActiveRef.current;
     pressInActiveRef.current = false;
 
     if (callCount === MAX_CALLS && nameConfirmed) return;
 
-    // currentRecording 객체가 유효하고 녹음 중인지 확인
-    if (isAudioRecordingActive || (wasPressActive && isUiLocked)) { // isAudioRecordingActive 사용
+    
+    if (isAudioRecordingActive || (wasPressActive && isUiLocked)) {
         await stopRecording();
     } else {
         if (isUiLocked && feedbackText === 'Listening...') {
@@ -632,7 +604,6 @@ function NameSpeakScreen({ navigation }) {
   );
 }
 
-// 스타일 정의는 이전과 동일하게 유지
 const styles = StyleSheet.create({
   gradientContainer: { flex: 1 },
   safeArea: { flex: 1 },
@@ -719,21 +690,21 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   yesButton: {
-    backgroundColor: Colors.wispyGreen || '#4CAF50'
+    backgroundColor: Colors.wispyGreen 
   },
   noButton: {
-    backgroundColor: Colors.wispyRed || '#F44336'
+    backgroundColor: Colors.wispyRed 
   },
-  playButton: { // Play 버튼 스타일 추가
-    backgroundColor: Colors.wispyBlue || '#2196F3',
-    marginTop: normalize(10), // 버튼 간 간격
+  playButton: { 
+    backgroundColor: Colors.wispyBlue ,
+    marginTop: normalize(10),
   },
-  disabledButton: { // 비활성화된 버튼 스타일
+  disabledButton: { 
     opacity: 0.5,
   },
   confirmationButtonText: {
-    color: Colors.wispyWhite || '#FFFFFF',
-    fontFamily: Fonts.suitBold || Fonts.suitHeavy,
+    color: Colors.wispyWhite,
+    fontFamily: Fonts.suitBold,
     fontSize: normalize(14),
   },
   flowerTouchable: {},
