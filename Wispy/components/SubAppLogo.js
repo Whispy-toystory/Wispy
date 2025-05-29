@@ -3,8 +3,7 @@ import React from 'react';
 import { Image, StyleSheet, Dimensions } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
-const inappLogoSrc = require('../assets/images/logo2.png'); // 실제 로고 경로 확인
-
+const inappLogoSrc = require('../assets/images/logo2.png');
 function SubAppLogo({
   source = inappLogoSrc,
   style,
@@ -30,7 +29,7 @@ function SubAppLogo({
 
 const styles = StyleSheet.create({
   logoBase: {
-    position: 'absolute', // 다른 요소와 관계없이 화면 기준으로 위치
+    position: 'absolute',
   },
 });
 

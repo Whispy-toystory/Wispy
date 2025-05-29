@@ -2,12 +2,11 @@
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { fontAssets } from './constants/fonts';
-import IntroGenScreen from './screens/IntroGenScreen';
-import CharacterGenerateScreen from './screens/CharacterGenerateScreen';
+import CamReadyScreen from './screens/CamReadyScreen';
+import GenWaitingScreen from './screens/GenWaitingScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import Onboarding1Screen from './screens/Onboarding1Screen';
-import WelcomeScreen from './screens/WelcomeScreen';
-import Onboarding2Screen from './screens/Onboarding2Screen';
+import NameSpeakScreenimage from './screens/NameSpeakImageScreen';
+import CameraCaptureScreen from './screens/CameraScreen';
 import Onboarding3Screen from './screens/Onboarding3Screen';
 import BirthDayPickScreen from './screens/BirthDayPickScreen';
 
