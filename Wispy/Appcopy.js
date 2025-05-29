@@ -5,7 +5,10 @@ import { fontAssets } from './constants/fonts';
 import CamReadyScreen from './screens/CamReadyScreen';
 import GenWaitingScreen from './screens/GenWaitingScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import NameSpeakScreen3D from './screens/NameSpeakScreen3D';
+import NameSpeakScreenimage from './screens/NameSpeakImageScreen';
+import CameraCaptureScreen from './screens/CameraScreen';
+import Onboarding3Screen from './screens/Onboarding3Screen';
+import 'react-native-get-random-values';
 
 
 export default function Appcopy() {
@@ -15,7 +18,7 @@ export default function Appcopy() {
 
   return (
     <SafeAreaProvider>
-      <NameSpeakScreen3D />
+      <NameSpeakScreenimage />
     </SafeAreaProvider>
   );
 }
