@@ -6,10 +6,8 @@ import {
   Image,
   Pressable,
   SafeAreaView,
-  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
@@ -26,6 +24,7 @@ const MAX_PROFILES = 4;
 const STORAGE_KEY = '@wispy_profiles';
 
 const avatarSequence = ['pony', 'sam', 'sun', 'jasmin'];
+
 const avatarMap = {
   pony: Pony,
   jasmin: Jasmin,
@@ -34,52 +33,32 @@ const avatarMap = {
 };
 
 export default function ProfileSelection() {
-  const navigation = useNavigation();
-  const isFocused = useIsFocused();
   const [profiles, setProfiles] = useState([]);
 
-  // 강제 초기화 함수
-  const forceReset = async () => {
-    try {
-      console.log('🧹 강제 초기화 시작...');
-      alert('🧹 강제 초기화 시작...');
-
-      await AsyncStorage.removeItem(STORAGE_KEY);
-      setProfiles([]);
-
-      const check = await AsyncStorage.getItem(STORAGE_KEY);
-      console.log('✅ 초기화 후 확인:', check);
-      alert(`✅ 초기화 완료. 현재 상태: ${check}`);
-    } catch (error) {
-      console.log('❌ 초기화 오류:', error);
-      alert(`❌ 오류 발생: ${error.message}`);
-    }
-  };
-
-  // 저장된 데이터 불러오기
   useEffect(() => {
-    const debugStorage = async () => {
-      try {
-        const data = await AsyncStorage.getItem(STORAGE_KEY);
-        console.log('🔍 현재 저장된 데이터:', data);
-        setProfiles(data ? JSON.parse(data) : []);
-      } catch (error) {
-        console.log('❌ 데이터 읽기 오류:', error);
+    const loadProfiles = async () => {
+      const data = await AsyncStorage.getItem(STORAGE_KEY);
+      if (data) {
+        setProfiles(JSON.parse(data));
       }
     };
+    loadProfiles();
+  }, []);
 
-    if (isFocused) {
-      debugStorage();
-    }
-  }, [isFocused]);
-
-  // 프로필 추가
   const handleAddProfile = () => {
     if (profiles.length >= MAX_PROFILES) return;
-    navigation.navigate('Onboarding1Screen', { currentIndex: profiles.length });
+
+    const newProfile = {
+      id: `profile-${Date.now()}`,
+      name: avatarSequence[profiles.length],
+      avatar: avatarSequence[profiles.length],
+    };
+
+    const updated = [...profiles, newProfile];
+    setProfiles(updated);
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
 
-  // 프로필 또는 + 버튼 렌더링
   const renderProfileSlot = (profile, index) => {
     if (profile) {
       return (
@@ -120,11 +99,6 @@ export default function ProfileSelection() {
 
       <View style={styles.profileGrid}>{profileViews}</View>
 
-      {/* 강제 초기화 버튼 */}
-      <Pressable onPress={forceReset}>
-        <Text style={styles.resetLink}>Force Reset Profiles</Text>
-      </Pressable>
-
       <Text style={styles.parentLink}>Are you a parent?</Text>
     </SafeAreaView>
   );
@@ -154,7 +128,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     color: Colors.wispyWhite,
     fontFamily: Fonts.suitExtraBold,
-    marginTop: 10,
+    marginTop: -30,
   },
   guardian: {
     color: Colors.wispyPink,
@@ -176,7 +150,7 @@ const styles = StyleSheet.create({
     height: 180,
     alignItems: 'center',
     marginHorizontal: 10,
-    marginVertical: 10,
+    marginVertical: 30,
   },
   avatar: {
     width: 100,
@@ -201,12 +175,5 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: 24,
     fontFamily: Fonts.suitRegular,
-  },
-  resetLink: {
-    color: 'red',
-    fontSize: 14,
-    marginBottom: 10,
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
   },
 });
