@@ -11,6 +11,7 @@ import Onboarding3Screen from './screens/Onboarding3Screen';
 import BirthDayPickScreen from './screens/BirthDayPickScreen';
 import OnboardingCompleteScreen from './screens/OnboardingCompleteScreen';
 import MagicalScreen from './screens/MagicalScreen';
+import ProfileSelection from './screens/ProfileSelection';
 
 export default function Aipcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
@@ -19,7 +20,7 @@ export default function Aipcopy() {
 
   return (
     <SafeAreaProvider>
-      <MagicalScreen />
+      <ProfileSelection />
     </SafeAreaProvider>
   );
 }
