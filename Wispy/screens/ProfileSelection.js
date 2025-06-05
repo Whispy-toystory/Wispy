@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     color: Colors.wispyWhite,
     fontFamily: Fonts.suitExtraBold,
-    marginTop: -70,
+    marginTop: -30,
   },
   guardian: {
     color: Colors.wispyPink,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     height: 180,
     alignItems: 'center',
     marginHorizontal: 10,
-    marginVertical: 10,
+    marginVertical: 30,
   },
   avatar: {
     width: 100,
