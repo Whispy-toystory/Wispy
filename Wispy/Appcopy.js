@@ -10,15 +10,16 @@ import CameraCaptureScreen from './screens/CameraScreen';
 import Onboarding3Screen from './screens/Onboarding3Screen';
 import BirthDayPickScreen from './screens/BirthDayPickScreen';
 import OnboardingCompleteScreen from './screens/OnboardingCompleteScreen';
+import MagicalScreen from './screens/MagicalScreen';
 
-export default function Appcopy() {
+export default function Aipcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
 
   if (!fontsLoaded) return null;
 
   return (
     <SafeAreaProvider>
-      <OnboardingCompleteScreen />
+      <MagicalScreen />
     </SafeAreaProvider>
   );
 }
