@@ -9,11 +9,9 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Constants
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 
-// Assets
 import WispyLogo from '../assets/images/logo2.png';
 import HaloImage from '../assets/images/halo.png';
 import PlusIcon from '../assets/images/plus.png';
@@ -25,6 +23,8 @@ import Sun from '../assets/images/sun.png';
 const MAX_PROFILES = 4;
 const STORAGE_KEY = '@wispy_profiles';
 
+const avatarSequence = ['pony', 'sam', 'sun', 'jasmin'];
+
 const avatarMap = {
   pony: Pony,
   jasmin: Jasmin,
@@ -35,7 +35,6 @@ const avatarMap = {
 export default function ProfileSelection() {
   const [profiles, setProfiles] = useState([]);
 
-  // Load profiles from AsyncStorage
   useEffect(() => {
     const loadProfiles = async () => {
       const data = await AsyncStorage.getItem(STORAGE_KEY);
@@ -46,21 +45,20 @@ export default function ProfileSelection() {
     loadProfiles();
   }, []);
 
-  // Handle temporary profile creation (to be replaced with actual creation UI)
   const handleAddProfile = () => {
     if (profiles.length >= MAX_PROFILES) return;
 
     const newProfile = {
       id: `profile-${Date.now()}`,
-      name: 'Pony',
-      avatar: 'pony',
+      name: avatarSequence[profiles.length],
+      avatar: avatarSequence[profiles.length],
     };
+
     const updated = [...profiles, newProfile];
     setProfiles(updated);
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
 
-  // Render each profile slot
   const renderProfileSlot = (profile, index) => {
     if (profile) {
       return (
@@ -90,21 +88,17 @@ export default function ProfileSelection() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Top logo */}
       <View style={styles.logoContainer}>
         <Image source={WispyLogo} style={styles.logo} />
       </View>
 
-      {/* Title */}
       <Text style={styles.title}>
         Choose your <Text style={styles.guardian}>guardian</Text>{' '}
         <Text style={styles.angel}>angel</Text> to connect with!
       </Text>
 
-      {/* Profile grid */}
       <View style={styles.profileGrid}>{profileViews}</View>
 
-      {/* Parent link */}
       <Text style={styles.parentLink}>Are you a parent?</Text>
     </SafeAreaView>
   );
