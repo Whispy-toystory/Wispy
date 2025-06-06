@@ -1,122 +1,92 @@
-// Flower3DModelComponent.js
-import React, { Suspense, useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
-import { Canvas, useFrame } from '@react-three/fiber/native'; // useFrame 추가
-import { useGLTF, OrbitControls, Environment } from '@react-three/drei/native';
-import { Asset } from 'expo-asset';
-import * as THREE from 'three'; // 필요에 따라 사용
+import React from 'react';
+import { View, StyleSheet, ActivityIndicator, Platform } from 'react-native';
+import { WebView } from 'react-native-webview';
 
-// 3D 공간 내의 간단한 로딩 대체 UI
-function ThreeJSLoaderFallback() {
-  const meshRef = useRef();
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.05;
-      meshRef.current.rotation.x += 0.02;
-    }
-  });
-  return (
-    <mesh ref={meshRef}>
-      <boxGeometry args={[0.5, 0.5, 0.5]} />
-      <meshStandardMaterial color="lightgray" wireframe />
-    </mesh>
-  );
-}
+// 모델 파일을 public URL로 업로드(예: AWS S3, Github, CloudFront, Netlify 등)
+// 또는 외부 glb 샘플 URL 사용
+const MODEL_URL = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb'; // 예시: model-viewer 공식 샘플
 
-// 모델을 로드하고 표시하는 컴포넌트
-function ModelComponent(props) {
-  const [assetUri, setAssetUri] = useState(null);
-  const [loadError, setLoadError] = useState(null);
+export default function Flower3DModelComponent() {
+  // WebView 내에서 Three.js + GLTFLoader로 GLB 파일을 로드하는 HTML
+  const html = `
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          html, body { margin:0; padding:0; overflow:hidden; background:transparent; }
+          #c { width:100vw; height:100vh; display:block; background:transparent; }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/loaders/GLTFLoader.js"></script>
+        <script>
+          // 모바일 터치 대응
+          document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+        </script>
+      </head>
+      <body>
+        <canvas id="c"></canvas>
+        <script>
+          var scene = new THREE.Scene();
+          var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+          camera.position.set(0, 1, 3);
 
-  useEffect(() => {
-    let isMounted = true;
-    async function loadAsset() {
-      try {
-        const asset = Asset.fromModule(require('../assets/3D/talkingflower.glb'));
-        console.log('ModelComponent: Asset module required, ID:', asset.name); // 에셋 이름 확인
-        await asset.downloadAsync();
-        if (isMounted) {
-          if (asset.localUri) {
-            setAssetUri(asset.localUri);
-            console.log('ModelComponent: Asset downloaded, localUri:', asset.localUri);
-          } else {
-            console.error('ModelComponent: Asset downloaded, but localUri is null.');
-            setLoadError('에셋 로컬 URI를 가져올 수 없습니다.');
+          var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('c'), alpha:true, antialias:true});
+          renderer.setClearColor(0x000000, 0);
+          renderer.setSize(window.innerWidth, window.innerHeight);
+
+          var ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+          scene.add(ambientLight);
+          var dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+          dirLight.position.set(2, 4, 2);
+          scene.add(dirLight);
+
+          var loader = new THREE.GLTFLoader();
+          loader.load('${MODEL_URL}', function(gltf) {
+            var model = gltf.scene;
+            // 모델 위치/크기 조정 (필요시)
+            model.position.set(0, 0, 0);
+            model.scale.set(1.2, 1.2, 1.2);
+            scene.add(model);
+
+            animate();
+          }, undefined, function(error) {
+            document.body.innerHTML = '<div style="color:red;text-align:center;margin-top:50%;">모델 로드 실패<br>'+error+'</div>';
+          });
+
+          function animate() {
+            requestAnimationFrame(animate);
+            // 모델 자동 회전 (예시)
+            if(scene.children[2]) scene.children[2].rotation.y += 0.01;
+            renderer.render(scene, camera);
           }
-        }
-      } catch (e) {
-        console.error('ModelComponent: Error loading asset.', e);
-        if (isMounted) {
-          setLoadError(e.message || '에셋 로딩 중 오류 발생');
-        }
-      }
-    }
-    loadAsset();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
-  // assetUri가 아직 준비되지 않았거나 오류 발생 시 Suspense가 처리하도록 null 반환
-  // 또는 여기서 명시적으로 로딩 상태를 반환할 수 있지만, Suspense 패턴을 따름
-  if (loadError) {
-    // 에러가 발생하면 3D 공간에 표시할 에러 메시지 (선택적)
-    // 또는 여기서 에러를 throw하여 ErrorBoundary에서 잡도록 할 수 있음
-    console.error("ModelComponent: Rendering error state due to:", loadError);
-    return <Text style={{ color: 'red', position: 'absolute', top: '50%', left: '50%' }}>모델 로드 실패: {loadError}</Text>;
-  }
+          window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          });
+        </script>
+      </body>
+    </html>
+  `;
 
-  if (!assetUri) {
-    // Suspense가 fallback을 보여주도록 null 또는 로딩 컴포넌트를 반환.
-    // 이 컴포넌트 자체가 Suspense의 자식이므로, 여기서 로딩 UI를 반환하면
-    // Suspense의 fallback과 중복될 수 있음. Suspense에 의존.
-    console.log("ModelComponent: assetUri is null, waiting for Suspense fallback.");
-    return null; // Suspense가 처리하도록 함
-  }
-
-  // assetUri가 준비되면 useGLTF 사용
-  const { scene } = useGLTF(assetUri);
-  console.log('ModelComponent: useGLTF called with URI:', assetUri);
-
-  // (선택 사항) 모델 조정
-  // scene.scale.set(0.5, 0.5, 0.5);
-  // scene.position.set(0, -0.5, 0);
-
-  return <primitive object={scene} {...props} />;
-}
-
-export default function Flower3DModel() {
   return (
     <View style={styles.container}>
-      <Suspense
-        fallback={ // Canvas 외부의 로딩 UI
+      <WebView
+        originWhitelist={['*']}
+        source={{ html }}
+        style={{ flex: 1, backgroundColor: 'transparent' }}
+        javaScriptEnabled
+        domStorageEnabled
+        allowFileAccess
+        allowUniversalAccessFromFileURLs
+        startInLoadingState
+        renderLoading={() => (
           <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color="#FFFFFF" />
-            <Text style={styles.loadingText}>3D 모델 로딩 중...</Text>
+            <ActivityIndicator size="large" color={Platform.OS === 'android' ? "#FFFFFF" : "#888888"} />
           </View>
-        }
-      >
-        <Canvas
-          style={styles.canvas}
-          gl={{ antialias: true, alpha: true }} // alpha:true는 투명 배경 허용
-          camera={{ position: [0, 1, 4], fov: 50 }} // 카메라 위치 조정
-          onCreated={({ gl, scene }) => {
-            console.log('Canvas created!');
-            // gl.setClearColor('transparent'); // Canvas 배경을 투명하게 (선택적)
-          }}
-        >
-          <ambientLight intensity={2.0} /> {/* 조명 강도 조절 */}
-          <directionalLight position={[3, 5, 2]} intensity={3.0} /> {/* 조명 위치 및 강도 조절 */}
-          {/* <Environment preset="sunset" background={false} /> */}
-
-          {/* Canvas 내부의 Suspense는 3D 에셋 로딩에만 사용 */}
-          <Suspense fallback={<ThreeJSLoaderFallback />}>
-            <ModelComponent />
-          </Suspense>
-
-          <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
-        </Canvas>
-      </Suspense>
+        )}
+      />
     </View>
   );
 }
@@ -124,21 +94,13 @@ export default function Flower3DModel() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#333', // 전체 앱 배경색
+    backgroundColor: 'transparent',
   },
-  canvas: {
-    flex: 1,
-  },
-  loadingOverlay: { // Canvas 외부 로딩 UI
-    ...StyleSheet.absoluteFillObject, // 화면 전체를 채움
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1, // Canvas 위에 표시
-  },
-  loadingText: {
-    color: 'white',
-    marginTop: 10,
-    fontSize: 16,
+    zIndex: 1,
   },
 });

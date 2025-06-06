@@ -6,7 +6,12 @@ const config = getDefaultConfig(__dirname);
 
 config.resolver.assetExts.push(
     'glb',
-    'gltf'
+    'gltf',
+    'bin',
+    'png',
+    'jpg'
 );
+
+config.resolver.unstable_enablePackageExports = false;
 
 module.exports = config;

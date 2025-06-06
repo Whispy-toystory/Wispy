@@ -1,4 +1,4 @@
-// NameSpeakScreen3D.js
+// NameSpeakScreen.js
 import React, { useRef } from 'react';
 import {
   View,
@@ -29,6 +29,7 @@ export function normalize(size) {
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 }
 
+// Image assets
 const guardianimg = require('../assets/images/angelguardian.png');
 
 function NameSpeakScreen({ navigation }) {
@@ -99,6 +100,8 @@ function NameSpeakScreen({ navigation }) {
             style={styles.flowerTouchable}
           >
             <Animated.View style={[{ transform: [{ scale: scaleValue }] }, styles.flowerModelContainer]}>
+              {/* Replace Image with your 3D model component */}
+              {/* <Image source={talkingFlowerImg} style={styles.flowerImageStyle} /> */}
               <Flower3DModel />
             </Animated.View>
           </Pressable>
@@ -108,6 +111,7 @@ function NameSpeakScreen({ navigation }) {
   );
 }
 
+// Using your provided styles:
 const styles = StyleSheet.create({
   gradientContainer: {
     flex: 1,
