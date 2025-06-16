@@ -6,24 +6,29 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-three/drei": "^10.1.2",
     "@react-three/fiber": "^9.1.2",
+    "assert": "^2.1.0",
     "base64-arraybuffer": "^1.0.2",
     "expo": "~53.0.10",
     "expo-app-loading": "2.1.1",
+    "expo-asset-utils": "^3.0.0",
     "expo-audio": "~0.4.6",
     "expo-camera": "~16.1.7",
+    "expo-file-system": "~18.1.10",
     "expo-font": "13.3.1",
     "expo-gl": "~15.1.6",
     "expo-gl-cpp": "^11.4.0",
     "expo-linear-gradient": "~14.1.5",
     "expo-status-bar": "~2.2.3",
-    "expo-three": "^8.0.0",
     "moment": "2.30.1",
+    "patch-package": "^8.0.0",
+    "r3f-native-orbitcontrols": "^1.0.12",
     "react": "19.0.0",
     "react-native": "0.79.3",
     "react-native-get-random-values": "^1.11.0",
@@ -31,7 +36,8 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-webview": "^13.14.1",
     "react-navigation": "^5.0.0",
-    "three": "^0.166.1"
+    "three": "0.164.1",
+    "three-stdlib": "^2.36.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

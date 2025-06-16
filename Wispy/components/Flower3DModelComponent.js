@@ -1,106 +1,130 @@
-import React from 'react';
-import { View, StyleSheet, ActivityIndicator, Platform } from 'react-native';
-import { WebView } from 'react-native-webview';
+// components/Flower3DModelComponent.js
+import React, { Suspense, useState, useEffect } from 'react';
+import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { Canvas } from '@react-three/fiber/native';
+import useControls from 'r3f-native-orbitcontrols';
+import { Asset } from 'expo-asset';
+import { readAsStringAsync, EncodingType } from 'expo-file-system';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { decode } from 'base64-arraybuffer';
 
-// 모델 파일을 public URL로 업로드(예: AWS S3, Github, CloudFront, Netlify 등)
-// 또는 외부 glb 샘플 URL 사용
-const MODEL_URL = 'https://modelviewer.dev/shared-assets/models/Astronaut.glb'; // 예시: model-viewer 공식 샘플
-
-export default function Flower3DModelComponent() {
-  // WebView 내에서 Three.js + GLTFLoader로 GLB 파일을 로드하는 HTML
-  const html = `
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          html, body { margin:0; padding:0; overflow:hidden; background:transparent; }
-          #c { width:100vw; height:100vh; display:block; background:transparent; }
-        </style>
-        <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/loaders/GLTFLoader.js"></script>
-        <script>
-          // 모바일 터치 대응
-          document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
-        </script>
-      </head>
-      <body>
-        <canvas id="c"></canvas>
-        <script>
-          var scene = new THREE.Scene();
-          var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-          camera.position.set(0, 1, 3);
-
-          var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('c'), alpha:true, antialias:true});
-          renderer.setClearColor(0x000000, 0);
-          renderer.setSize(window.innerWidth, window.innerHeight);
-
-          var ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-          scene.add(ambientLight);
-          var dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-          dirLight.position.set(2, 4, 2);
-          scene.add(dirLight);
-
-          var loader = new THREE.GLTFLoader();
-          loader.load('${MODEL_URL}', function(gltf) {
-            var model = gltf.scene;
-            // 모델 위치/크기 조정 (필요시)
-            model.position.set(0, 0, 0);
-            model.scale.set(1.2, 1.2, 1.2);
-            scene.add(model);
-
-            animate();
-          }, undefined, function(error) {
-            document.body.innerHTML = '<div style="color:red;text-align:center;margin-top:50%;">모델 로드 실패<br>'+error+'</div>';
-          });
-
-          function animate() {
-            requestAnimationFrame(animate);
-            // 모델 자동 회전 (예시)
-            if(scene.children[2]) scene.children[2].rotation.y += 0.01;
-            renderer.render(scene, camera);
-          }
-
-          window.addEventListener('resize', function() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-          });
-        </script>
-      </body>
-    </html>
-  `;
-
-  return (
-    <View style={styles.container}>
-      <WebView
-        originWhitelist={['*']}
-        source={{ html }}
-        style={{ flex: 1, backgroundColor: 'transparent' }}
-        javaScriptEnabled
-        domStorageEnabled
-        allowFileAccess
-        allowUniversalAccessFromFileURLs
-        startInLoadingState
-        renderLoading={() => (
-          <View style={styles.loadingOverlay}>
-            <ActivityIndicator size="large" color={Platform.OS === 'android' ? "#FFFFFF" : "#888888"} />
-          </View>
-        )}
-      />
-    </View>
-  );
+// 로딩 로직을 React 외부의 async 함수로 분리
+async function parseGLB(arrayBuffer) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    // GLTFLoader가 전역 객체나 다른 라이브러리의 영향을 받지 않는지 확인하기 위해
+    // 로더를 사용하는 부분을 최대한 격리합니다.
+    try {
+        loader.parse(arrayBuffer, '', resolve, reject);
+    } catch (e) {
+        reject(e);
+    }
+  });
 }
 
+async function loadAndParseModel(modelAssetModule) {
+  console.log("loadAndParseModel: 시작");
+  const asset = Asset.fromModule(modelAssetModule);
+  if (!asset.downloaded) {
+    await asset.downloadAsync();
+  }
+  console.log("loadAndParseModel: 에셋 다운로드 완료, 로컬 URI:", asset.localUri || asset.uri);
+
+  // asset.localUri를 사용하여 파일 시스템에서 직접 읽어옵니다.
+  const base64 = await readAsStringAsync(asset.localUri || asset.uri, {
+    encoding: EncodingType.Base64,
+  });
+  const arrayBuffer = decode(base64);
+  console.log("loadAndParseModel: ArrayBuffer 변환 완료, 크기:", arrayBuffer.byteLength);
+
+  const gltf = await parseGLB(arrayBuffer);
+  console.log("loadAndParseModel: GLTF 파싱 성공");
+  return gltf.scene; // Scene 객체 반환
+}
+
+async function loadTexture(textureAssetModule) {
+    const asset = Asset.fromModule(textureAssetModule);
+    if (!asset.downloaded) {
+        await asset.downloadAsync();
+    }
+    console.log("loadTexture: 텍스처 에셋 로드 완료, URI:", asset.localUri || asset.uri);
+    const loader = new THREE.TextureLoader();
+    // TextureLoader는 file URI를 잘 처리합니다.
+    return loader.load(asset.localUri || asset.uri);
+}
+
+
+function GlobalLoaderUI({ message }) { return <View style={styles.loaderOverlay}><Text style={styles.loadingText}>{message}</Text><ActivityIndicator size="large" color="#FF69B4" /></View>;}
+
+const Flower3DModel = () => {
+  const modelAssetModule = require('../assets/models/talkingflower.glb');
+  const textureAssetModule = require('../assets/models/flower_texture.png');
+
+  const [scene, setScene] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [loadingMessage, setLoadingMessage] = useState('3D 모델 로딩 시작...');
+  const [OrbitControls, events] = useControls();
+
+  useEffect(() => {
+    const loadAllAssets = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        setLoadingMessage('모델 데이터 로딩 및 파싱 중...');
+        const modelScene = await loadAndParseModel(modelAssetModule);
+        
+        setLoadingMessage('텍스처 데이터 로딩 중...');
+        const texture = await loadTexture(textureAssetModule);
+        texture.flipY = false;
+
+        modelScene.traverse((child) => {
+            if (child.isMesh) {
+                child.material.map = texture;
+                child.material.needsUpdate = true;
+            }
+        });
+        console.log("모든 에셋 로딩 및 텍스처 적용 완료");
+        setScene(modelScene);
+      } catch (e) {
+        console.error("최종 에셋 로딩 과정에서 오류:", e);
+        setError(e.message || '모델 또는 텍스처를 로드할 수 없습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadAllAssets();
+  }, [modelAssetModule, textureAssetModule]);
+
+  if (error) return <View style={styles.errorContainer}><Text style={styles.errorText}>오류: {error}</Text></View>;
+  if (isLoading || !scene) return <GlobalLoaderUI message={loadingMessage} />;
+
+  const modelScale = 0.3;
+  const modelPosition = [0, 0, 0];
+
+  return (
+    <View {...events} style={styles.container}>
+      <Canvas camera={{ position: [0, 0.5, 1.5], fov: 50 }}>
+        <ambientLight intensity={Math.PI / 2} />
+        <directionalLight position={[0, 5, 5]} intensity={1} />
+        <primitive 
+            object={scene} 
+            scale={modelScale}
+            position={modelPosition}
+        />
+        <OrbitControls />
+      </Canvas>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
+  container: { flex: 1, width: '100%', height: '100%', backgroundColor: '#222' },
+  loaderOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)', zIndex: 10 },
+  loadingText: { color: '#FFFFFF', fontSize: 16, marginBottom: 10 },
+  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#fff' },
+  errorText: { color: 'red', fontSize: 16, textAlign: 'center' },
 });
+
+export default Flower3DModel;
