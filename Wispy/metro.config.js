@@ -1,16 +1,12 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
+// metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+const projectRoot = __dirname;
+const config = getDefaultConfig(projectRoot);
 
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname);
-
-
-if (!config.resolver) {
-  config.resolver = {};
-}
-if (!config.resolver.assetExts) {
-  config.resolver.assetExts = [];
-}
+config.resolver.alias = {
+  three: path.resolve(projectRoot, 'node_modules/three'),
+};
 config.resolver.assetExts.push('glb', 'gltf');
 
 module.exports = config;
