@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -20,7 +19,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.anonymous.Wispy",
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -34,12 +32,8 @@
       "expo-font",
       "expo-audio",
       "expo-asset",
-      "expo-video"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "7fecf7fb-627f-48d8-b743-ec1c32ea2bd3"
-      }
-    }
+      "expo-video",
+      "react-native-video"
+    ]
   }
 }

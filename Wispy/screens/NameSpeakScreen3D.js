@@ -100,8 +100,6 @@ function NameSpeakScreen({ navigation }) {
             style={styles.flowerTouchable}
           >
             <Animated.View style={[{ transform: [{ scale: scaleValue }] }, styles.flowerModelContainer]}>
-              {/* Replace Image with your 3D model component */}
-              {/* <Image source={talkingFlowerImg} style={styles.flowerImageStyle} /> */}
               <Flower3DModel />
             </Animated.View>
           </Pressable>
