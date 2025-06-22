@@ -33,7 +33,8 @@
     "plugins": [
       "expo-font",
       "expo-audio",
-      "expo-asset"
+      "expo-asset",
+      "expo-video"
     ],
     "extra": {
       "eas": {

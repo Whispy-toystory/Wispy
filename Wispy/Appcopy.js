@@ -6,8 +6,7 @@ import GenWaitingScreen from './screens/GenWaitingScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import NameSpeakScreen3D from './screens/NameSpeakScreen3D';
 
-
-export default function Appcopy() {
+export default function Aipcopy() {
   const [fontsLoaded] = useFonts(fontAssets);
 
   if (!fontsLoaded) return null;
