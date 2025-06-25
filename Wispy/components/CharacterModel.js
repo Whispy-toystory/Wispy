@@ -15,7 +15,7 @@ export function CharacterModel({ isAnimated = false, ...props }) {
     scene.traverse((child) => {
       if (child.isMesh) {
         child.material.emissive = new THREE.Color(0xffffff);
-        child.material.emissiveIntensity = 0.05;
+        child.material.emissiveIntensity = 0.06;
       }
     });
   }, [scene]);

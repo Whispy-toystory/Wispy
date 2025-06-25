@@ -21,11 +21,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as THREE from 'three';
 import { StatusBar } from 'expo-status-bar';
 
-// 사용자 프로젝트의 실제 경로 및 이름으로 수정
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 import { PlayContent } from '../components/PlayContent';
-import Flower3DModel from '../components/Flower3DModelComponent';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -51,6 +49,7 @@ const ChatBubble = ({ message }) => {
   );
 };
 
+// ChatUI 컴포넌트는 메시지 목록, 현재 날짜, 더보기 메뉴 상태, 입력 텍스트 및 메시지 전송 핸들러를 props로 받습니다
 const ChatUI = memo(({
     messages,
     currentDate,
@@ -64,15 +63,13 @@ const ChatUI = memo(({
 
     return (
         <>
-        {/* 상단 툴바 */}
         <View style={styles.topBar}>
             <Text style={styles.dateText}>{currentDate}</Text>
             <View>
             <TouchableOpacity style={styles.moreButton} onPress={() => setMoreMenuVisible(v => !v)}>
-                {/* more 버튼 이미지 또는 텍스트 */}
                 <Image
-                    source={require('../assets/images/more.png')} // 이미지 파일 경로
-                    style={styles.moreIcon} // 이미지 스타일 적용
+                    source={require('../assets/images/more.png')}
+                    style={styles.moreIcon}
                 />
                 <Text style={{color: 'white'}}>more</Text>
             </TouchableOpacity>
@@ -80,22 +77,25 @@ const ChatUI = memo(({
             </View>
         </View>
 
-        {/* 키보드 대응 영역 */}
         <KeyboardAvoidingView
             style={styles.keyboardAvoidingContainer}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === "ios" ? "padding" : undefined} // CHANGED: Android는 네이티브 동작에 맡깁니다.
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
         >
-            <FlatList
-            data={messages}
-            renderItem={({ item }) => <ChatBubble message={item} />}
-            keyExtractor={item => item.id.toString()}
-            style={styles.messageList}
-            contentContainerStyle={{ paddingTop: 130, paddingBottom: 10 }}
-            />
+            {/* CHANGED: FlatList를 View로 감싸고 chatArea 스타일을 적용합니다. */}
+            <View style={styles.chatArea}>
+                <FlatList
+                data={messages}
+                renderItem={({ item }) => <ChatBubble message={item} />}
+                keyExtractor={item => item.id.toString()}
+                // style prop은 제거하거나 필요한 다른 스타일을 넣습니다.
+                contentContainerStyle={{ paddingTop: 130, paddingBottom: 10 }}
+                />
+            </View>
             <ChatInputArea
-            inputText={inputText}
-            setInputText={setInputText}
-            handleSendMessage={handleSendMessage}
+                inputText={inputText}
+                setInputText={setInputText}
+                handleSendMessage={handleSendMessage}
             />
         </KeyboardAvoidingView>
         </>
@@ -124,7 +124,7 @@ const ChatInputArea = memo(({ inputText, setInputText, handleSendMessage }) => {
         onPress={() => handleSendMessage(inputText)}
       >
         <Image
-          source={require('../assets/images/talking_flower.png')} // 예시 경로, 실제 이미지로 교체
+          source={require('../assets/images/talking_flower.png')}
           style={styles.flowerIcon}
         />
       </TouchableOpacity>
@@ -132,7 +132,7 @@ const ChatInputArea = memo(({ inputText, setInputText, handleSendMessage }) => {
   );
 });
 
-// sliding menu component
+// SlidingMenu 컴포넌트
 const SlidingMenu = ({ isVisible, onClose }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -212,10 +212,9 @@ function ChatScreen() {
             text: text.trim(),
             sender: 'user',
         };
-        // 함수형 업데이트로 messages 의존성 제거
         setMessages(prevMessages => [...prevMessages, newMessage]);
         setInputText('');
-    }, []); // 의존성 배열을 비워야 합니다! inputText도 제거.
+    }, []);
     
 
   return (
@@ -224,13 +223,16 @@ function ChatScreen() {
 
       {/* --- 레이어 1: 배경 & 3D 모델 --- */}
       <LinearGradient colors={['#4facfe', '#00f2fe']} style={StyleSheet.absoluteFillObject} />
-      <Canvas style={StyleSheet.absoluteFillObject} gl={{ alpha: true }} camera={{ position: [0, 1.5, 6], fov: 50 }}>
-        <Suspense fallback={null}>
-            <group position={[0, 0.8, 0]}>
-                <PlayContent isAnimated={true} />
-            </group>
-        </Suspense>
-      </Canvas>
+      {/* CHANGED: Canvas 스타일을 수정하여 크기를 화면에 완전히 고정합니다. */}
+      <View style={styles.canvasContainer} pointerEvents="none">
+        <Canvas gl={{ alpha: true }} camera={{ position: [0, 1.5, 6], fov: 50 }}>
+          <Suspense fallback={null}>
+              <group position={[0, 0.5, 0]}>
+                  <PlayContent isAnimated={true} />
+              </group>
+          </Suspense>
+        </Canvas>
+      </View>
       
       {/* --- 레이어 2: UI --- */}
       <SafeAreaView style={styles.uiOverlay} edges={['top', 'bottom']}>
@@ -252,6 +254,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  canvasContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT+50,
+    bottom: 0,
+  },
+  keyboardAvoidingContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
   uiOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -264,7 +278,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 40, // 상태바 및 노치 영역 고려
+    paddingTop: 40,
     height: 80,
     zIndex: 10,
     backgroundColor: 'transparent',
@@ -274,7 +288,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.suitHeavy,
     color: Colors.black,
   },
-    moreButton: {
+  moreButton: {
     width: 64,
     height: 64,
     borderRadius: 32,
@@ -292,7 +306,7 @@ const styles = StyleSheet.create({
     fontSize: normalize(14),
     fontFamily: Fonts.suitHeavy,
   },
-    slidingMenuButtonContainer: {
+  slidingMenuButtonContainer: {
     position: 'absolute',
     top: 0,
     right: 0,

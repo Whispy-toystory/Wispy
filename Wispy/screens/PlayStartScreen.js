@@ -100,17 +100,16 @@ function PlayStartScreen() {
   );
 }
 
-// 레이어 구조에 맞게 스타일 전면 수정
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   uiOverlay: {
-    ...StyleSheet.absoluteFillObject, // 화면 전체를 덮도록 설정
-    justifyContent: 'space-between', // 아이템들을 위아래로 분산
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'space-between',
   },
   textContainer: {
-    paddingTop: 60, // 상단 여백
+    paddingTop: 60,
     paddingHorizontal: 20,
   },
   mainText: {
@@ -130,7 +129,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingHorizontal: 24,
-    paddingBottom: 40, // 하단 여백
+    paddingBottom: 40,
   },
 });
 
