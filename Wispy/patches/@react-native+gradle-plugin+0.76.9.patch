@@ -1,0 +1,28 @@
+diff --git a/node_modules/@react-native/gradle-plugin/.gradle/buildOutputCleanup/buildOutputCleanup.lock b/node_modules/@react-native/gradle-plugin/.gradle/buildOutputCleanup/buildOutputCleanup.lock
+new file mode 100644
+index 0000000..4a71215
+Binary files /dev/null and b/node_modules/@react-native/gradle-plugin/.gradle/buildOutputCleanup/buildOutputCleanup.lock differ
+diff --git a/node_modules/@react-native/gradle-plugin/.gradle/buildOutputCleanup/cache.properties b/node_modules/@react-native/gradle-plugin/.gradle/buildOutputCleanup/cache.properties
+new file mode 100644
+index 0000000..00ed871
+--- /dev/null
++++ b/node_modules/@react-native/gradle-plugin/.gradle/buildOutputCleanup/cache.properties
+@@ -0,0 +1,2 @@
++#Tue Jun 24 12:52:49 KST 2025
++gradle.version=8.10.2
+diff --git a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts
+index 6669e9e..227dd9c 100644
+--- a/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts
++++ b/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/build.gradle.kts
+@@ -64,8 +64,9 @@ tasks.withType<KotlinCompile>().configureEach {
+     apiVersion = "1.6"
+     // See comment above on JDK 11 support
+     jvmTarget = "11"
+-    allWarningsAsErrors =
+-        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
++    // allWarningsAsErrors.set(
++    //   project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
++    // )
+   }
+ }
+ 
