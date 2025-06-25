@@ -226,8 +226,9 @@ function ChatScreen() {
       {/* CHANGED: Canvas 스타일을 수정하여 크기를 화면에 완전히 고정합니다. */}
       <View style={styles.canvasContainer} pointerEvents="none">
         <Canvas gl={{ alpha: true }} camera={{ position: [0, 1.5, 6], fov: 50 }}>
+          <fog attach="fog" args={['rgb(169, 223, 255)', 5, 23]} />
           <Suspense fallback={null}>
-              <group position={[0, 0.5, 0]}>
+              <group position={[0, 1, 0]}>
                   <PlayContent isAnimated={true} />
               </group>
           </Suspense>

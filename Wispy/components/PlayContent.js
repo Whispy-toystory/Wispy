@@ -21,7 +21,7 @@ export function PlayContent({ isAnimated }) {
       />
 
       {/* 스카이박스 */}
-      <Skybox rotationX={-0.6} rotationY={15} />
+      <Skybox rotationX={-0.5} rotationY={0} />
 
       {/* 캐릭터 */}
       <CharacterModel scale={1} position={[0, -0.5, 0]} isAnimated={isAnimated} />      

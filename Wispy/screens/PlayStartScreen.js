@@ -53,7 +53,8 @@ function PlayStartScreen() {
         toneMapping={THREE.ACESFilmicToneMapping}
         camera={{ position: [0, 1.5, 6], fov: 50}}
       >
-
+        {/* THREE.Fog(색상, 안개 시작 거리, 안개 끝나는 거리) */}
+        <fog attach="fog" args={['rgb(169, 223, 255)', 5, 23]} />
         <Suspense fallback={null}>
           <PlayContent />
         </Suspense>
@@ -87,7 +88,7 @@ function PlayStartScreen() {
       {shoot && (
         <ConfettiCannon
           key={Math.random()} 
-          count={200}
+          count={300}
           origin={{ x: SCREEN_WIDTH/2, y: SCREEN_HEIGHT }}
           autoStart={true}
           fadeOut={true}

@@ -29,8 +29,8 @@ export function Skybox({ rotationX = 0, rotationY = 0 }) {
     <mesh ref={meshRef} rotation={[rotationX, rotationY, 0]}>
 
       <sphereGeometry args={[7, 60, 40]} />
-      
-      <meshBasicMaterial ref={materialRef} side={THREE.BackSide} toneMapped={false} />
+
+      <meshBasicMaterial ref={materialRef} side={THREE.BackSide} toneMapped={false} color='rgb(216, 241, 255)'/>
     </mesh>
   );
 }
