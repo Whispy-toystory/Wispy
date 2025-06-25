@@ -93,7 +93,7 @@ function PlayStartScreen() {
           fadeOut={true}
           explosionSpeed={200}
           fallSpeed={3000}
-          colors={['#ff0', '#ffc0cb', '#1e90ff', '#0f0', '#f00']}
+          colors={['rgb(252, 113, 136)', 'rgb(174, 241, 165)', 'rgb(131, 193, 255)', 'rgb(255, 248, 151)']}
         />
       )}
     </View>
