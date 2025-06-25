@@ -1,3 +1,4 @@
+// components/GrassModel.js
 import React from 'react';
 import { useGLTF, useTexture } from '@react-three/drei/native';
 import * as THREE from 'three';
@@ -32,7 +33,7 @@ export function GrassModel(props) {
         roughnessMap={roughnessMap}
         metalnessMap={metallicMap}
         
-        color="#aaffaa" // 헥스 코드로 색상 지정
+        color="#aaffaa"
         
         emissive="green" // 스스로 녹색 빛을 내도록 설정
         emissiveIntensity={-0.3}

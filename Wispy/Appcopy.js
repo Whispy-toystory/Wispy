@@ -13,7 +13,7 @@ export default function Aipcopy() {
 
   return (
     <SafeAreaProvider>
-      <PlayStartScreen/>
+      <ChatScreen/>
     </SafeAreaProvider>
   );
 }

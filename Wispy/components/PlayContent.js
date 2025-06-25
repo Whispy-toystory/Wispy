@@ -1,10 +1,10 @@
 // PlayContent.js
 import React from 'react';
-
 import { CharacterModel } from './CharacterModel';
 import { GrassModel } from './GrassModel';
 import { Skybox } from './Skybox';
-export function PlayContent() {
+
+export function PlayContent({ isAnimated }) {
   return (
     <>
       {/* 조명*/}
@@ -19,11 +19,13 @@ export function PlayContent() {
         intensity={1}
         castShadow={false}
       />
+
+      {/* 스카이박스 */}
       <Skybox rotationX={-0.6} rotationY={15} />
 
       {/* 캐릭터 */}
-      <CharacterModel scale={1} position={[0, -0.5, 0]} />
-      
+      <CharacterModel scale={1} position={[0, -0.5, 0]} isAnimated={isAnimated} />      
+
       {/* 잔디 */}
       <GrassModel
         scale={0.04}

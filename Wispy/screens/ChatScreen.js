@@ -1,3 +1,4 @@
+// ChatScreen.js
 import React, { Suspense, useState, useEffect, useRef, memo, useCallback } from 'react';
 import {
   View,
@@ -219,14 +220,14 @@ function ChatScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" translucent={true} />
+      <StatusBar style="light" translucent={true} />
 
       {/* --- 레이어 1: 배경 & 3D 모델 --- */}
       <LinearGradient colors={['#4facfe', '#00f2fe']} style={StyleSheet.absoluteFillObject} />
       <Canvas style={StyleSheet.absoluteFillObject} gl={{ alpha: true }} camera={{ position: [0, 1.5, 6], fov: 50 }}>
         <Suspense fallback={null}>
             <group position={[0, 0.8, 0]}>
-                <PlayContent />
+                <PlayContent isAnimated={true} />
             </group>
         </Suspense>
       </Canvas>
@@ -234,13 +235,13 @@ function ChatScreen() {
       {/* --- 레이어 2: UI --- */}
       <SafeAreaView style={styles.uiOverlay} edges={['top', 'bottom']}>
         <ChatUI
-        messages={messages}
-        currentDate={currentDate}
-        isMoreMenuVisible={isMoreMenuVisible}
-        setMoreMenuVisible={setMoreMenuVisible}
-        inputText={inputText}
-        setInputText={setInputText}
-        handleSendMessage={handleSendMessage}
+          messages={messages}
+          currentDate={currentDate}
+          isMoreMenuVisible={isMoreMenuVisible}
+          setMoreMenuVisible={setMoreMenuVisible}
+          inputText={inputText}
+          setInputText={setInputText}
+          handleSendMessage={handleSendMessage}
         />
       </SafeAreaView>
     </View>
