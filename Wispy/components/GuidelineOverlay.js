@@ -16,7 +16,6 @@ export default function GuidelineOverlay({ type }) {
 
     const guidelineImageSource = GUIDELINE_IMAGES[type];
 
-    // type에 따라 다른 스타일을 적용
     let guidelineStyle = {};
     if (type === 'front') {
         guidelineStyle = styles.frontGuideline;
@@ -66,6 +65,6 @@ const styles = StyleSheet.create({
     },
     guidelineImage: {
       opacity: 1, // 반투명하게
-      paddingBottom: 30, // 아래쪽 여백
+      paddingBottom: 30,
     },
 });

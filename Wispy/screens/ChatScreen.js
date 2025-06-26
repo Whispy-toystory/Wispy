@@ -79,16 +79,14 @@ const ChatUI = memo(({
 
         <KeyboardAvoidingView
             style={styles.keyboardAvoidingContainer}
-            behavior={Platform.OS === "ios" ? "padding" : undefined} // CHANGED: Android는 네이티브 동작에 맡깁니다.
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
         >
-            {/* CHANGED: FlatList를 View로 감싸고 chatArea 스타일을 적용합니다. */}
             <View style={styles.chatArea}>
                 <FlatList
                 data={messages}
                 renderItem={({ item }) => <ChatBubble message={item} />}
                 keyExtractor={item => item.id.toString()}
-                // style prop은 제거하거나 필요한 다른 스타일을 넣습니다.
                 contentContainerStyle={{ paddingTop: 130, paddingBottom: 10 }}
                 />
             </View>
@@ -223,7 +221,6 @@ function ChatScreen() {
 
       {/* --- 레이어 1: 배경 & 3D 모델 --- */}
       <LinearGradient colors={['#4facfe', '#00f2fe']} style={StyleSheet.absoluteFillObject} />
-      {/* CHANGED: Canvas 스타일을 수정하여 크기를 화면에 완전히 고정합니다. */}
       <View style={styles.canvasContainer} pointerEvents="none">
         <Canvas gl={{ alpha: true }} camera={{ position: [0, 1.5, 6], fov: 50 }}>
           <fog attach="fog" args={['rgb(169, 223, 255)', 5, 23]} />

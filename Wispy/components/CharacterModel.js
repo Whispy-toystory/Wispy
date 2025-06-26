@@ -6,7 +6,6 @@ import * as THREE from 'three';
 
 const modelPath = require('../assets/models/character.glb');
 
-// isAnimated prop을 추가하고, 기본값을 false로 설정합니다.
 export function CharacterModel({ isAnimated = false, ...props }) {
   const { scene } = useGLTF(modelPath);
   const modelRef = useRef();

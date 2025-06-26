@@ -3,7 +3,6 @@ import React from 'react';
 import { useGLTF, useTexture } from '@react-three/drei/native';
 import * as THREE from 'three';
 
-// 파일 경로 정의
 const modelPath = require('../assets/models/Circular_Grass.glb');
 const texturePaths = [
   require('../assets/textures/patern_1_basecolor.png'),
@@ -16,7 +15,7 @@ export function GrassModel(props) {
   const { nodes } = useGLTF(modelPath);
   const [baseColorMap, normalMap, roughnessMap, metallicMap] = useTexture(texturePaths);
 
-  // 모든 텍스처에 동일한 타일링(반복) 설정을 적용합니다.
+  // 모든 텍스처에 동일한 타일링(반복) 설정
   const textures = [baseColorMap, normalMap, roughnessMap, metallicMap];
   textures.forEach(texture => {
     texture.wrapS = THREE.RepeatWrapping;

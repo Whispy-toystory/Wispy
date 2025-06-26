@@ -31,6 +31,7 @@
     "plugins": [
       "expo-font",
       "expo-audio",
+      "expo-av",
       "expo-asset",
       "expo-video",
       "react-native-video"
