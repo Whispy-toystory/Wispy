@@ -7,7 +7,6 @@ const screenWidth = Dimensions.get('window').width;
 const defaultWiskerImageSource = require('../assets/images/Wisker.png');
 
 /**
- * 'Wisker' 캐릭터 이미지를 표시하는 재사용 가능한 컴포넌트입니다.
  * @param {object} props - 컴포넌트 props
  * @param {import('react-native').ImageSourcePropType} [props.source=defaultWiskerImageSource]
  * @param {object} [props.containerStyle]

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DateTimePickerModal from 'react-native-modal-datetime-picker'; // DateTimePickerModal 추가
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
 import PrimaryButton from '../components/PrimaryButton';
