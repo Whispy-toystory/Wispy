@@ -1,4 +1,5 @@
 // ChatScreen.js
+// [수정] useNavigation hook을 import 합니다.
 import React, { Suspense, useState, useEffect, useRef, memo, useCallback } from 'react';
 import {
   View,
@@ -12,10 +13,13 @@ import {
   Platform,
   PixelRatio,
   KeyboardAvoidingView,
+  Pressable,
   Animated,
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+// [수정] useNavigation hook을 import 합니다.
+import { useNavigation } from '@react-navigation/native';
 import { Canvas } from '@react-three/fiber/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as THREE from 'three';
@@ -24,6 +28,8 @@ import { StatusBar } from 'expo-status-bar';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 import { PlayContent } from '../components/PlayContent';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import PrimaryButton from '../components/PrimaryButton';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -55,6 +61,7 @@ const ChatUI = memo(({
     currentDate,
     isMoreMenuVisible,
     setMoreMenuVisible,
+    onDeletePress,
     inputText,
     setInputText,
     handleSendMessage
@@ -66,14 +73,20 @@ const ChatUI = memo(({
         <View style={styles.topBar}>
             <Text style={styles.dateText}>{currentDate}</Text>
             <View>
-            <TouchableOpacity style={styles.moreButton} onPress={() => setMoreMenuVisible(v => !v)}>
+            <TouchableOpacity
+                style={[styles.moreButton, isMoreMenuVisible && { backgroundColor: Colors.wispyBlue }]}
+                onPress={() => setMoreMenuVisible(v => !v)}>
                 <Image
                     source={require('../assets/images/more.png')}
                     style={styles.moreIcon}
                 />
                 <Text style={{color: 'white'}}>more</Text>
             </TouchableOpacity>
-            <SlidingMenu isVisible={isMoreMenuVisible} onClose={() => setMoreMenuVisible(false)} />
+            <SlidingMenu
+              isVisible={isMoreMenuVisible}
+              onClose={() => setMoreMenuVisible(false)}
+              onDeletePress={onDeletePress}
+            />
             </View>
         </View>
 
@@ -130,28 +143,50 @@ const ChatInputArea = memo(({ inputText, setInputText, handleSendMessage }) => {
   );
 });
 
-// SlidingMenu 컴포넌트
-const SlidingMenu = ({ isVisible, onClose }) => {
+const SlidingMenu = ({ isVisible, onClose, onDeletePress }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const [isRendered, setIsRendered] = useState(isVisible);
 
   useEffect(() => {
-    Animated.spring(slideAnim, {
-      toValue: isVisible ? 1 : 0,
-      tension: 60,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
-  }, [isVisible]);
+    if (isVisible) {
+      setIsRendered(true);
+      Animated.spring(slideAnim, {
+        toValue: 1,
+        tension: 60,
+        friction: 10,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        tension: 60,
+        friction: 10,
+        useNativeDriver: true,
+      }).start(() => {
+        setIsRendered(false);
+      });
+    }
+  }, [isVisible, slideAnim]);
 
-  if (!isVisible) return null;
+  if (!isRendered) {
+    return null;
+  }
 
   const menuItems = [
-    { label: 'Diary', color: Colors.wispyOrange },
-    { label: 'Delete', color: Colors.wispyRed },
+    { label: 'Diary', color: Colors.wispyGreen, action: () => console.log('Diary Pressed') },
+    { label: 'Delete', color: Colors.wispyRed, action: () => {
+      onClose();
+      onDeletePress();
+    }},
   ];
 
   return (
-    <TouchableOpacity style={styles.menuOverlay} activeOpacity={1} onPress={onClose}>
+    <TouchableOpacity
+      style={styles.menuOverlay}
+      activeOpacity={1}
+      onPress={onClose}
+      pointerEvents={isVisible ? 'auto' : 'none'}
+    >
       {menuItems.map((item, index) => {
         const transY = slideAnim.interpolate({
           inputRange: [0, 1],
@@ -166,9 +201,13 @@ const SlidingMenu = ({ isVisible, onClose }) => {
             key={item.label}
             style={[styles.slidingMenuButtonContainer, { transform: [{ translateY: transY }], opacity }]}
           >
-            <TouchableOpacity style={[styles.slidingMenuButton, { backgroundColor: item.color }]}>
+            <Pressable
+              onPress={item.action}
+              style={[styles.slidingMenuButton, { backgroundColor: item.color }]}
+              disabled={!isVisible}
+            >
               <Text style={styles.slidingMenuButtonText}>{item.label}</Text>
-            </TouchableOpacity>
+            </Pressable>
           </Animated.View>
         );
       })}
@@ -176,7 +215,10 @@ const SlidingMenu = ({ isVisible, onClose }) => {
   );
 };
 
+
 function ChatScreen() {
+  const navigation = useNavigation();
+
   const [currentDate, setCurrentDate] = useState('');
   const [messages, setMessages] = useState([
     { id: 1, text: 'Hello!', sender: 'character' },
@@ -186,6 +228,7 @@ function ChatScreen() {
   ]);
   const [inputText, setInputText] = useState('');
   const [isMoreMenuVisible, setMoreMenuVisible] = useState(false);
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
@@ -203,17 +246,22 @@ function ChatScreen() {
     }
   }, [messages]);
 
-    const handleSendMessage = useCallback((text) => {
-        if (!text || text.trim().length === 0) return;
-        const newMessage = {
-            id: Date.now().toString(),
-            text: text.trim(),
-            sender: 'user',
-        };
-        setMessages(prevMessages => [...prevMessages, newMessage]);
-        setInputText('');
-    }, []);
-    
+  const handleSendMessage = useCallback((text) => {
+      if (!text || text.trim().length === 0) return;
+      const newMessage = {
+          id: Date.now().toString(),
+          text: text.trim(),
+          sender: 'user',
+      };
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+      setInputText('');
+  }, []);
+
+  const handleDeleteConfirm = () => {
+    console.log("Delete confirmed!");
+    setDeleteModalVisible(false);
+    navigation.navigate('Onboarding1Screen'); 
+  };
 
   return (
     <View style={styles.container}>
@@ -239,11 +287,17 @@ function ChatScreen() {
           currentDate={currentDate}
           isMoreMenuVisible={isMoreMenuVisible}
           setMoreMenuVisible={setMoreMenuVisible}
+          onDeletePress={() => setDeleteModalVisible(true)}
           inputText={inputText}
           setInputText={setInputText}
           handleSendMessage={handleSendMessage}
         />
       </SafeAreaView>
+      <DeleteConfirmModal
+        visible={isDeleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        onConfirm={handleDeleteConfirm}
+      />
     </View>
   );
 }
@@ -332,7 +386,7 @@ const styles = StyleSheet.create({
     maxHeight: SCREEN_HEIGHT * 0.4,
   },
   bubble: {
-    maxWidth: '80%',
+    maxWidth: '70%',
     padding: 12,
     borderRadius: 18,
     marginHorizontal: 10,
@@ -348,9 +402,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   chatText: {
-    fontSize: normalize(16),
+    fontSize: normalize(18),
     color: Colors.wispyBlack,
     fontFamily: Fonts.suitSemiBold,
+    lineHeight: 24,
   },
   inputAreaWrapper: {
     marginHorizontal: 10,

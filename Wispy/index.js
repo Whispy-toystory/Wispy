@@ -1,5 +1,5 @@
 import { registerRootComponent } from 'expo';
-
+import { AppRegistry } from 'react-native';
 import Appcopy from './Appcopy';
 // import App from './App';
 

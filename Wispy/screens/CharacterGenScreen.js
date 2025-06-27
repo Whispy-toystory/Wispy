@@ -1,4 +1,4 @@
-// CharacterGenerateScreen.js
+// CharacterGenScreen.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,7 +29,7 @@ export function normalize(size) {
 }
 
 
-function CharacterGenerateScreen() {
+function CharacterGenScreen() {
   return (
     <LinearGradient
       colors={[Colors.wispyPink, Colors.wispyBlue]}
@@ -112,4 +112,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CharacterGenerateScreen;
+export default CharacterGenScreen;
