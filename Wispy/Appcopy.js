@@ -10,6 +10,7 @@ import Onboarding1Screen from './screens/Onboarding1Screen';
 import ProfileSelection from './screens/ProfileSelection';
 import DiaryScreen from './screens/DiaryScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
+import MagicalScreen from './screens/MagicalScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,11 +25,12 @@ export default function Appcopy() {
       <NavigationContainer>
         <Stack.Navigator
           // DiaryScreen을 테스트하기 위해 시작 화면으로 설정합니다.
-          initialRouteName="ChatScreen"
+          initialRouteName="MagicalScreen"
           screenOptions={{
             headerShown: false,
           }}
         >
+          <Stack.Screen name="MagicalScreen" component={MagicalScreen} />
           <Stack.Screen name="DiaryScreen" component={DiaryScreen} />
           <Stack.Screen name="ChatScreen" component={ChatScreen} />
           <Stack.Screen name="ProfileSelection" component={ProfileSelection} />
