@@ -122,7 +122,6 @@ export default function DiaryScreen() {
 
   // 애니메이션을 위한 Animated.Value 생성
   const viewAnim = useRef(new Animated.Value(0)).current;
-  const calendarRef = useRef(null);
   
   // 오늘 날짜 문자열 생성
   const todayString = new Date().toISOString().split('T')[0];
@@ -270,16 +269,14 @@ export default function DiaryScreen() {
                         monthFormat={'MMM yyyy'}
                         theme={{
                         backgroundColor: 'transparent',
-                        calendarBackground: Colors.wispyWhite,
                         textSectionTitleColor: Colors.wispyBlack,
                         selectedDayTextColor: Colors.wispyWhite,
                         textDisabledColor: Colors.wispyGrey,
                         arrowColor: Colors.wispyNavy,
-                        textSectionTitleColor: Colors.wispyBlack,
                         monthTextColor: Colors.wispyBlack,
                         textDayFontFamily: Fonts.suitMedium,
                         textMonthFontFamily: Fonts.suitHeavy,
-                        textDayHeaderFontFamily: Fonts.suitRegular,
+                        textDayHeaderFontFamily: Fonts.suitBold,
                         monthLineHeight: normalize(30),
                         textDayFontSize: normalize(14),
                         textMonthFontSize: normalize(16),
@@ -404,7 +401,7 @@ const styles = StyleSheet.create({
         marginVertical: normalize(10),
         borderRadius: normalize(20),
         backgroundColor: Colors.wispyWhite,
-        height: normalize(420), // 높이 재조정
+        height: normalize(420),
         paddingBottom: normalize(10),
         elevation: 8,
         shadowColor: Colors.wispyBlack,
@@ -432,7 +429,7 @@ const styles = StyleSheet.create({
   },
   customHeaderContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // 양 끝으로 버튼을 밀어냄
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 10,
     paddingBottom: 5,

@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 25,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: Colors.wispyBlack,
     shadowOffset: {
       width: 0,
       height: 2,

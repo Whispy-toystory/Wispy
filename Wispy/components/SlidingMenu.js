@@ -1,10 +1,7 @@
 // components/SlidingMenu.js
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Animated, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
-import Colors from '../constants/colors';
-
-// normalize 함수를 더 이상 사용하지 않으므로 import 경로를 삭제하거나 주석 처리합니다.
+import Fonts from '../constants/fonts';
 
 export default function SlidingMenu({ isVisible, onClose, menuItems = [] }) {
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -45,7 +42,6 @@ export default function SlidingMenu({ isVisible, onClose, menuItems = [] }) {
       {menuItems.map((item, index) => {
         const transY = slideAnim.interpolate({
           inputRange: [0, 1],
-          // [수정] 버튼 간격 및 시작 위치 조정
           outputRange: [0, (index + 1) * 75], 
         });
         const opacity = slideAnim.interpolate({
@@ -100,6 +96,6 @@ const styles = StyleSheet.create({
   slidingMenuButtonText: {
     color: 'white',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: Fonts.suitHeavy,
   },
 });
