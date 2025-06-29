@@ -27,6 +27,7 @@ import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 import { PlayContent } from '../components/PlayContent';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import TextInputConfirmModal from '../components/TextInputConfirmModal';
 import SlidingMenu from '../components/SlidingMenu';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -149,6 +150,8 @@ function ChatScreen() {
   const [inputText, setInputText] = useState('');
   const [isMoreMenuVisible, setMoreMenuVisible] = useState(false);
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [isTextInputModalVisible, setTextInputModalVisible] = useState(false);
+
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
@@ -177,10 +180,16 @@ function ChatScreen() {
       setInputText('');
   }, []);
 
-  const handleDeleteConfirm = () => {
-    console.log("Delete confirmed!");
+  // 삭제 확인 모달 핸들러
+  const handleInitialDeleteConfirm = () => {
     setDeleteModalVisible(false);
-    navigation.navigate('ProfileSelection'); 
+    setTextInputModalVisible(true);
+  };
+
+  const handleFinalDelete = () => {
+    console.log("Final deletion confirmed!");
+    setTextInputModalVisible(false);
+    navigation.navigate('ProfileSelection');
   };
 
   const onHomePress = () => navigation.navigate('ProfileSelection');
@@ -234,7 +243,15 @@ function ChatScreen() {
       <DeleteConfirmModal
         visible={isDeleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
-        onConfirm={handleDeleteConfirm}
+        onConfirm={handleInitialDeleteConfirm}
+      />
+      <TextInputConfirmModal
+        visible={isTextInputModalVisible}
+        onClose={() => setTextInputModalVisible(false)}
+        onConfirm={handleFinalDelete}
+        title="Type 'Delete' to confirm"
+        description="To permanently delete this moment, please type 'Delete' below."
+        requiredText="Delete"
       />
     </View>
   );
@@ -282,7 +299,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: Colors.wispyPink,
+    backgroundColor: Colors.wispyDarkerPink,
     justifyContent: 'center',
     alignItems: 'center',
   },

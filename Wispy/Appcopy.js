@@ -25,7 +25,7 @@ export default function Appcopy() {
       <NavigationContainer>
         <Stack.Navigator
           // DiaryScreen을 테스트하기 위해 시작 화면으로 설정합니다.
-          initialRouteName="MagicalScreen"
+          initialRouteName="DiaryScreen"
           screenOptions={{
             headerShown: false,
           }}

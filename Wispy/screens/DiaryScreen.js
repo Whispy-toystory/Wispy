@@ -21,6 +21,7 @@ import { StatusBar } from 'expo-status-bar';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import TextInputConfirmModal from '../components/TextInputConfirmModal';
 import SlidingMenu from '../components/SlidingMenu';
 
 const calendarIcon = require('../assets/images/calendar_icon.png'); 
@@ -117,6 +118,7 @@ export default function DiaryScreen() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isMoreMenuVisible, setMoreMenuVisible] = useState(false);
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [isTextInputModalVisible, setTextInputModalVisible] = useState(false);
   const initialDate = new Date().toISOString().split('T')[0];
   const [currentMonth, setCurrentMonth] = useState(initialDate);
 
@@ -166,10 +168,16 @@ export default function DiaryScreen() {
   };
 
   // 삭제 확인 모달 핸들러
-  const handleDeleteConfirm = () => {
-     setDeleteModalVisible(false);
-     navigation.navigate('ProfileSelection');
-  }
+  const handleInitialDeleteConfirm = () => {
+    setDeleteModalVisible(false);
+    setTextInputModalVisible(true);
+  };
+
+  const handleFinalDelete = () => {
+    console.log("Final deletion confirmed from Diary!");
+    setTextInputModalVisible(false);
+    navigation.navigate('ProfileSelection');
+  };
 
   // 홈, 플레이, 삭제 버튼 핸들러
   const onHomePress = () => navigation.navigate('ProfileSelection');
@@ -331,7 +339,15 @@ export default function DiaryScreen() {
       <DeleteConfirmModal
         visible={isDeleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
-        onConfirm={handleDeleteConfirm}
+        onConfirm={handleInitialDeleteConfirm}
+      />
+      <TextInputConfirmModal
+        visible={isTextInputModalVisible}
+        onClose={() => setTextInputModalVisible(false)}
+        onConfirm={handleFinalDelete}
+        title="Type 'Delete' to confirm"
+        description="To permanently delete this moment, please type 'Delete' below."
+        requiredText="Delete"
       />
     </LinearGradient>
   );
@@ -374,7 +390,7 @@ const styles = StyleSheet.create({
         width: 64,
         height: 64,
         borderRadius: 32,
-        backgroundColor: Colors.wispyPink,
+        backgroundColor: Colors.wispyDarkerPink,
         justifyContent: 'center',
         alignItems: 'center',
     },

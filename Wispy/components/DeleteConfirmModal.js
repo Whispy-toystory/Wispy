@@ -40,7 +40,7 @@ function DeleteConfirmModal({ visible, onClose, onConfirm }) {
             {/* Back 버튼 */}
             <PrimaryButton
               onPress={onClose}
-              backgroundColor={Colors.wispyButtonYellow}
+              backgroundColor={Colors.wispyGrey}
               textColor={Colors.wispyBlack}
               style={styles.button}
             >
