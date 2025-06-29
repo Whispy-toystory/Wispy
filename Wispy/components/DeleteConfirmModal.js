@@ -20,9 +20,9 @@ function DeleteConfirmModal({ visible, onClose, onConfirm }) {
       transparent={true}
       animationType="fade"
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
       <View style={styles.modalOverlay}>
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
         <View style={styles.modalContainer}>
           {/* 경고 아이콘 이미지 */}
           <Image
@@ -70,11 +70,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
   modalContainer: {
     width: '80%',
