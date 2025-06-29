@@ -180,7 +180,7 @@ function ChatScreen() {
   const handleDeleteConfirm = () => {
     console.log("Delete confirmed!");
     setDeleteModalVisible(false);
-    navigation.navigate('Onboarding1Screen'); 
+    navigation.navigate('ProfileSelection'); 
   };
 
   const onHomePress = () => navigation.navigate('ProfileSelection');

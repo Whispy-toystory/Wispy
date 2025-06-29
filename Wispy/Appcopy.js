@@ -7,8 +7,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import PlayStartScreen from './screens/PlayStartScreen';
 import ChatScreen from './screens/ChatScreen';
 import Onboarding1Screen from './screens/Onboarding1Screen';
-import ProfileSelection from './screens/Onboarding1Screen';
+import ProfileSelection from './screens/ProfileSelection';
 import DiaryScreen from './screens/DiaryScreen';
+import OnboardingScreen from './screens/OnboardingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,7 +32,7 @@ export default function Appcopy() {
           <Stack.Screen name="DiaryScreen" component={DiaryScreen} />
           <Stack.Screen name="ChatScreen" component={ChatScreen} />
           <Stack.Screen name="ProfileSelection" component={ProfileSelection} />
-          <Stack.Screen name="Onboarding1Screen" component={Onboarding1Screen} />
+          <Stack.Screen name="OnboardingScreen" component={OnboardingScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

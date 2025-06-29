@@ -349,7 +349,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: normalize(20),
     paddingTop: Platform.OS === 'android' ? normalize(30) : normalize(10),
-    paddingBottom: normalize(10),
   },
   headerLeft: {
     marginTop: normalize(10),
@@ -363,7 +362,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontFamily: Fonts.suitHeavy,
-    paddingVertical: 20,
+    paddingTop: 10,
     fontSize: normalize(24),
     lineHeight: normalize(24),
     color: Colors.wispyWhite,
