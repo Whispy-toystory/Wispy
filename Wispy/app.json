@@ -34,7 +34,8 @@
       "expo-av",
       "expo-asset",
       "expo-video",
-      "react-native-video"
+      "react-native-video",
+      "expo-secure-store"
     ]
   }
 }
