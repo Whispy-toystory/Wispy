@@ -28,6 +28,8 @@ const MagicalScreen = () => {
         allowsFullscreen
         allowsPictureInPicture
         contentFit="cover"
+        allowsVideoControlling={false} 
+        nativeControls={false}
       />
     </View>
   );
