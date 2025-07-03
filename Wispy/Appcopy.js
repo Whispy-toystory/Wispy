@@ -40,7 +40,7 @@ export default function Appcopy() {
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator 
-          initialRouteName="Welcome"
+          initialRouteName="ProfileSelection"
           screenOptions={{ headerShown: false }}
         >
           <Stack.Screen name="ProfileSelection" component={ProfileSelection} />

@@ -74,8 +74,8 @@ export default function ChildProfileSelectionScreen({ navigation }) {
         <Pressable
           key={`add-${index}`}
           style={styles.profileContainer}
-          onPress={handleAddProfile}
         >
+          <View style={styles.halo} />
           <Image source={PlusIcon} style={styles.avatar} />
         </Pressable>
       );
@@ -126,12 +126,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    textAlign: 'left',
-    lineHeight: 20,
+    textAlign: 'center',
+    lineHeight: 28,
     marginHorizontal: 20,
     color: Colors.wispyWhite,
     fontFamily: Fonts.suitExtraBold,
-    marginTop: 50,
+    marginTop: 80,
     marginBottom: -50,
   },
   guardian: {
@@ -146,15 +146,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginTop: 30,
+    paddingTop: 10,
     paddingHorizontal: 10,
+    flex: 1,
+    alignContent: 'center',
   },
   profileContainer: {
     width: 112,
     height: 180,
     alignItems: 'center',
     marginHorizontal: 10,
-    marginVertical: 30,
+    marginVertical: 20,
   },
   avatar: {
     width: 100,
