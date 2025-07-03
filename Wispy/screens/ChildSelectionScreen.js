@@ -1,17 +1,10 @@
+// ChildSelectionScreen.js
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Pressable,
-  SafeAreaView,
-} from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
-
 import WispyLogo from '../assets/images/logo2.png';
 import HaloImage from '../assets/images/halo.png';
 import PlusIcon from '../assets/images/plus.png';
@@ -32,7 +25,7 @@ const avatarMap = {
   sun: Sun,
 };
 
-export default function ProfileSelectionScreen({ navigation }) {
+export default function ChildProfileSelectionScreen({ navigation }) {
   const [profiles, setProfiles] = useState([]);
 
   useEffect(() => {
@@ -58,11 +51,19 @@ export default function ProfileSelectionScreen({ navigation }) {
     setProfiles(updated);
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
+  
+  const handleLogout = () => {
+    navigation.replace('ProfileSelection');
+  };
+
+  const handleGoHome = () => {
+    navigation.navigate('ProfileSelection');
+  };
 
   const renderProfileSlot = (profile, index) => {
     if (profile) {
       return (
-        <View style={styles.profileContainer} key={index}>
+        <View style={styles.profileContainer} key={profile.id}>
           <Image source={HaloImage} style={styles.halo} />
           <Image source={avatarMap[profile.avatar]} style={styles.avatar} />
           <Text style={styles.name}>{profile.name}</Text>
@@ -71,7 +72,7 @@ export default function ProfileSelectionScreen({ navigation }) {
     } else {
       return (
         <Pressable
-          key={index}
+          key={`add-${index}`}
           style={styles.profileContainer}
           onPress={handleAddProfile}
         >
@@ -88,19 +89,18 @@ export default function ProfileSelectionScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.logoContainer}>
-        <Image source={WispyLogo} style={styles.logo} />
-      </View>
+        <Pressable onPress={handleGoHome} style={styles.logoContainer}>
+            <Image source={WispyLogo} style={styles.logo} />
+        </Pressable>
 
       <Text style={styles.title}>
-        Choose your <Text style={styles.guardian}>guardian</Text>{' '}
-        <Text style={styles.angel}>angel</Text> to connect with!
+        Manage Child Profiles
       </Text>
 
       <View style={styles.profileGrid}>{profileViews}</View>
 
-      <Pressable onPress={() => navigation.navigate('ParentAuth')}>
-        <Text style={styles.parentLink}>Are you a parent?</Text>
+      <Pressable onPress={handleLogout}>
+        <Text style={styles.parentLink}>Logout</Text>
       </Pressable>
     </SafeAreaView>
   );
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    paddingTop: 30,
+    marginTop: 30,
     paddingHorizontal: 10,
   },
   profileContainer: {

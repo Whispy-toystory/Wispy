@@ -10,7 +10,9 @@ import Onboarding1Screen from './screens/Onboarding1Screen';
 import ProfileSelection from './screens/ProfileSelection';
 import DiaryScreen from './screens/DiaryScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
-import MagicalScreen from './screens/MagicalScreen';
+import ParentAuthScreen from './screens/ParentAuthScreen';
+import ProfileSelectionScreen from './screens/ProfileSelection';
+import ChildSelectionScreen from './screens/ChildSelectionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,18 +25,13 @@ export default function Appcopy() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Stack.Navigator
-          // DiaryScreen을 테스트하기 위해 시작 화면으로 설정합니다.
-          initialRouteName="DiaryScreen"
-          screenOptions={{
-            headerShown: false,
-          }}
+        <Stack.Navigator 
+          initialRouteName="ProfileSelection"
+          screenOptions={{ headerShown: false }}
         >
-          <Stack.Screen name="MagicalScreen" component={MagicalScreen} />
-          <Stack.Screen name="DiaryScreen" component={DiaryScreen} />
-          <Stack.Screen name="ChatScreen" component={ChatScreen} />
-          <Stack.Screen name="ProfileSelection" component={ProfileSelection} />
-          <Stack.Screen name="OnboardingScreen" component={OnboardingScreen} />
+          <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreen} />
+          <Stack.Screen name="ParentAuth" component={ParentAuthScreen} />
+          <Stack.Screen name="ChildSelection" component={ChildSelectionScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
