@@ -8,6 +8,7 @@ import Colors from "../constants/colors";
 import Fonts from '../constants/fonts';
 import Wisker from '../components/Wisker';
 import PrimaryButton from "../components/PrimaryButton";
+import { useNavigation } from '@react-navigation/native';
 
 // utils/normalizeText.js
 import { Dimensions, Platform, PixelRatio } from 'react-native';
@@ -30,6 +31,8 @@ export function normalize(size) {
 
 
 function CharacterGenScreen() {
+  const navigation = useNavigation();
+  
   return (
     <LinearGradient
       colors={[Colors.wispyPink, Colors.wispyBlue]}
@@ -59,7 +62,10 @@ function CharacterGenScreen() {
 
           <View style={styles.buttonContainer}>
             <PrimaryButton
-              onPress={() => console.log('Next pressed')}
+              onPress={() => {
+                console.log('Next pressed');
+                navigation.navigate('IntroGen');
+              }}
               textColor={Colors.wispyBlue}
             >
               Next

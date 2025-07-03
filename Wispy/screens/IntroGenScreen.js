@@ -8,6 +8,7 @@ import Fonts from '../constants/fonts';
 import Wisker from '../components/Wisker';
 import PrimaryButton from "../components/PrimaryButton";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 // utils/normalizeText.js
 // import { Dimensions, Platform, PixelRatio } from 'react-native';
@@ -35,6 +36,8 @@ function IntroGenScreen({ route }) {
   // 예시로 하드코딩된 사용자 이름입니다. 실제로는 props나 전역 상태에서 가져와야 합니다.
   const [APIuserName, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+
+  const navigation = useNavigation();
 
   return (
     <LinearGradient
@@ -69,7 +72,9 @@ function IntroGenScreen({ route }) {
         {/* 버튼 */}
         <View style={styles.inputContainer}>
           <PrimaryButton
-          onPress={() => console.log('Next pressed')}
+          onPress={() => {console.log('Next pressed');
+            navigation.navigate('ToyReady');
+          }}
           textColor={Colors.wispyBlue}>Okay, I understand</PrimaryButton>
         </View>
       </SafeAreaView>

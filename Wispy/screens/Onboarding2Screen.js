@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import PrimaryButton from '../components/PrimaryButton';
 import Colors from '../constants/colors';
@@ -25,6 +26,8 @@ function Onboarding2Screen() {
   const [nickname, setNickname] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [touched, setTouched] = useState(false);
+  const navigation = useNavigation();
+
 
   useEffect(() => {
     const nicknameRegex = /^[a-zA-Z]+$/;
@@ -33,6 +36,7 @@ function Onboarding2Screen() {
 
   const handleComplete = () => {
     console.log('Complete pressed with nickname:', nickname);
+    navigation.navigate('Onboarding3');
   };
 
   const showValidation = touched && nickname.length > 0 && !isValid;

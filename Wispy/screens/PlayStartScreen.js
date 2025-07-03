@@ -9,6 +9,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 import * as THREE from 'three';
+import { useNavigation } from '@react-navigation/native';
 
 import { PlayContent } from '../components/PlayContent';
 
@@ -27,6 +28,7 @@ export function normalize(size) {
 function PlayStartScreen() {
   const userName = 'User Name';
   const characterName = 'Character Name';
+  const navigation = useNavigation();
 
   // Confetti
   const [shoot, setShoot] = useState(false);
@@ -75,7 +77,10 @@ function PlayStartScreen() {
 
         <View style={styles.buttonContainer}>
           <PrimaryButton
-            onPress={() => console.log('Play button pressed!')}
+            onPress={() => {
+              console.log('Play button pressed!');
+              navigation.navigate('Chat');
+            }}
             backgroundColor={Colors.wispyButtonYellow}
             textColor={Colors.wispyRed}
           >

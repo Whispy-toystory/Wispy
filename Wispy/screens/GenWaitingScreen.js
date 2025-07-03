@@ -9,6 +9,7 @@ import Fonts from '../constants/fonts';
 import Wisker from '../components/Wisker';
 import PrimaryButton from "../components/PrimaryButton";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 // utils/normalizeText.js
 import { Dimensions, Platform, PixelRatio } from 'react-native';
@@ -144,6 +145,7 @@ function GenWaitingScreen({ navigation }) {
 
   const handleButtonPress = () => {
     console.log('천사가 준비되었습니다! 다음 행동 수행...');
+    navigation.navigate('NameSpeakImage');
   };
 
   return (

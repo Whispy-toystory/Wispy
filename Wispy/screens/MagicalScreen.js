@@ -1,14 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
+import { useNavigation } from '@react-navigation/native';
 
 const MagicalScreen = () => {
+  const navigation = useNavigation();
   const player = useVideoPlayer(require('../assets/video/arrived.mov'), player => {
     player.loop = false;
     player.play();
   });
+
+  useEffect(() => {
+    let timerId;
+
+    const subscription = player.addListener('playingChange', (isPlaying) => {
+      // isPlaying이 true일 때 (즉, 영상이 재생되기 시작했을 때) 타이머를 설정합니다.
+      if (isPlaying) {
+        timerId = setTimeout(() => {
+          navigation.replace('CharacterGen');
+        }, 6300);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+    };
+  }, [player, navigation]);
 
   return (
     <View style={styles.container}>

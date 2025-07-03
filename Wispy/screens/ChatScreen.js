@@ -193,7 +193,7 @@ function ChatScreen() {
   };
 
   const onHomePress = () => navigation.navigate('ProfileSelection');
-  const onDiaryPress = () => navigation.navigate('DiaryScreen');
+  const onDiaryPress = () => navigation.navigate('Diary');
   const onDeletePress = () => setDeleteModalVisible(true);
 
   const chatMenuItems = [

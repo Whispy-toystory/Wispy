@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import PrimaryButton from '../components/PrimaryButton';
 import Colors from '../constants/colors';
@@ -19,14 +20,18 @@ import WispyLogo from '../assets/images/logo2.png';
 const screenHeight = Dimensions.get('window').height;
 
 function Onboarding3Screen() {
+  const navigation = useNavigation();
+
   const name = 'Robin';
 
   const handleBackPress = () => {
     console.log('Back 버튼 눌림!');
+    navigation.navigate('Onboarding2');
   };
 
   const handleNextPress = () => {
     console.log('Next 버튼 눌림!');
+    navigation.navigate('BirthDayPick');
   };
 
   return (

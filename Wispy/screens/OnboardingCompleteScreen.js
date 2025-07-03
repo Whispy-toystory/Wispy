@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import PrimaryButton from '../components/PrimaryButton';
 import Colors from '../constants/colors';
@@ -20,8 +21,10 @@ import Complete from '../assets/images/Complete.png';
 const screenHeight = Dimensions.get('window').height;
 
 function OnboardingCompleteScreen({ navigation }) { 
+
   const handleNext = () => {
     console.log('Next pressed');
+    navigation.navigate('Magical');
     // TODO: 다음 화면으로 이동하는 로직추가 필요
   };
 

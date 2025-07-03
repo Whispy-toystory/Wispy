@@ -20,7 +20,7 @@ import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";  
 import Fonts from '../constants/fonts';       
 import Wisker from '../components/Wisker';     
-// expo-audio를 제거하고 expo-av만 사용합니다.
+import { useNavigation } from '@react-navigation/native';
 import { Audio, InterruptionModeAndroid } from 'expo-av';
 
 // normalize function
@@ -58,7 +58,7 @@ function NameSpeakImageScreen({ navigation }) {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const appState = useRef(AppState.currentState);
   const pressInActiveRef = useRef(false); 
-  const lastRecordingEndTimeRef = useRef(0); 
+  const lastRecordingEndTimeRef = useRef(0);
 
   // expo-audio의 useAudioRecorder 대신 expo-av의 recording 객체를 state로 관리합니다.
   const [recording, setRecording] = useState(null);
@@ -171,6 +171,23 @@ function NameSpeakImageScreen({ navigation }) {
     }
   }, [nameConfirmed, guardianName, callCount, isUiLocked, showConfirmationPrompt]);
 
+  useEffect(() => {
+    // 이름이 확정되고, 호출 횟수가 최대치에 도달했을 때만 실행
+    if (nameConfirmed && callCount === MAX_CALLS) {
+      console.log('Call count reached max. Setting 3-second timer for navigation...');
+      
+      // 2초 후에 다음 화면으로 넘어가는 타이머 설정
+      const timer = setTimeout(() => {
+        navigation.navigate('PlayStart');
+      }, 2000);
+
+      // 컴포넌트가 언마운트되거나 useEffect가 다시 실행되기 전에 타이머를 정리합니다.(메모리 누수 방지)
+      return () => {
+        console.log('Clearing navigation timer.');
+        clearTimeout(timer);
+      };
+    }
+  }, [nameConfirmed, callCount, navigation]);
 
   async function startRecording() {
     console.log("startRecording: Attempting. pressInActiveRef:", pressInActiveRef.current);

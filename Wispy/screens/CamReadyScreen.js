@@ -1,112 +1,104 @@
-// CameraSetScreen.js
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Platform, PixelRatio } from 'react-native';
-import SubAppLogo from '../components/SubAppLogo';
-import Colors from "../constants/colors";
+// screens/CamReadyScreen.js
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, AppState, Platform } from 'react-native';
+import { useCameraPermissions } from 'expo-camera';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+
+import PrimaryButton from '../components/PrimaryButton';
+import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
-import Wisker from '../components/Wisker';
-import PrimaryButton from "../components/PrimaryButton";
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// utils/normalizeText.js
+import { Dimensions, PixelRatio } from 'react-native';
+const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-
 const designScreenWidth = 375;
-
 const scale = SCREEN_WIDTH / designScreenWidth;
 
 export function normalize(size) {
   const newSize = size * scale;
-  if (Platform.OS === 'ios') {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize));
-  } else {
-    return Math.round(PixelRatio.roundToNearestPixel(newSize));
-
-  }
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
 }
 
-
-const cameraimg = require('../assets/images/Camera.png');
- 
 function CamReadyScreen() {
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const [permission, requestPermission] = useCameraPermissions();
+  const appState = useRef(AppState.currentState);
 
+  useEffect(() => {
+    // AppState의 변경을 감지하는 리스너를 설정합니다.
+    const subscription = AppState.addEventListener('change', async (nextAppState) => {
+      // 앱이 비활성 상태였다가 다시 활성 상태로 돌아왔고, 현재 화면이 포커스 상태일 때
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active' &&
+        isFocused
+      ) {
+        console.log('App has come to the foreground, re-checking permissions.');
+        // 권한 상태를 다시 한번 가져옵니다.
+        const freshPermissions = await requestPermission();
+        if (freshPermissions.granted) {
+          console.log('Permission granted after returning to app. Navigating...');
+          navigation.replace('Camera');
+        }
+      }
+      appState.current = nextAppState;
+    });
+
+    // 컴포넌트가 사라질 때 리스너를 정리합니다.
+    return () => {
+      subscription.remove();
+    };
+  }, [isFocused, navigation, requestPermission]); // isFocused가 바뀔 때마다 리스너를 재설정할 수 있도록 추가
+
+  // 권한이 이미 승인된 상태로 이 화면에 진입한 경우
+  useEffect(() => {
+    if (isFocused && permission?.granted) {
+      navigation.replace('Camera');
+    }
+  }, [isFocused, permission, navigation]);
+
+  // 권한이 아직 결정되지 않았거나, 포커스되지 않았을 때
+  if (!permission || !isFocused) {
+    return <View style={styles.centered} />;
+  }
+
+  // 권한 요청 UI
+  if (!permission.granted) {
     return (
-        <View
-            style={styles.bakcgroundContainer}
+      <View style={styles.centered}>
+        <Text style={styles.permissionText}>
+          To take photos, you need to allow camera access.
+        </Text>
+        <PrimaryButton
+          onPress={requestPermission} // 버튼 클릭 시 권한 요청
+          backgroundColor={Colors.wispyButtonYellow}
+          textColor={Colors.wispyTextBlue}
         >
-            <SafeAreaView style={styles.safeArea}>
-
-                <View style={[styles.headerContainer]}>
-                    {/*<SubAppLogo />*/}
-                </View>
-
-                <View style={styles.contentContainer}>
-                    <View style={styles.textcontainer}>
-                        <Text style={styles.mainText}>
-                            First, {'\n'}
-                            please find{'\n'}
-                            your most <Text style={{color:Colors.wispyYellow}}>favorite toy</Text>{'\n'}
-                            and hold it close...
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={styles.characterImageContainer}>
-                    <Wisker source={cameraimg}/>
-                </View>
-
-                <View style={styles.inputContainer}>
-                    <PrimaryButton title="Start Camera" 
-                    onPress={() => console.log('Next')}
-                    textColor={Colors.wispyRed}>Ready? Let's take a photo!</PrimaryButton>
-                </View>
-            </SafeAreaView>
-            
-        </View>
+          Allow Camera
+        </PrimaryButton>
+      </View>
     );
+  }
+  
+  return <View style={styles.centered} />;
 }
 
 const styles = StyleSheet.create({
-    bakcgroundContainer: {
-        flex: 1,
-        backgroundColor: Colors.wispyBlack,
-    },
-    safeArea: {
-        flex: 1,
-    },
-    headerContainer: {
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        flex: 0.2,
-        paddingHorizontal: 15,
-    },
-    contentContainer: {
-        flex: 1,
-    },
-    textcontainer: {
-        flex: 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    mainText: {
-        textAlign: 'center',
-        color: Colors.wispyWhite,
-        fontSize: normalize(25),
-        lineHeight: normalize(40),
-        fontFamily: Fonts.suitHeavy,
-    },
-    characterImageContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1.2,
-    },
-  inputContainer: {
-    paddingTop: 10,
-    paddingBottom: 20,
-    paddingHorizontal: 24,
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: Colors.wispyBlack
+  },
+  permissionText: {
+    fontFamily: Fonts.suitHeavy,
+    color: Colors.wispyWhite,
+    fontSize: normalize(18),
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
-
 
 export default CamReadyScreen;

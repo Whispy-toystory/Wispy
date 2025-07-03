@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
@@ -23,6 +25,8 @@ import Listen from '../assets/images/listen.png';
 const screenHeight = Dimensions.get('window').height;
 
 function BirthDayPickScreen() {
+  const navigation = useNavigation();
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const showDatePicker = () => {
@@ -42,6 +46,7 @@ function BirthDayPickScreen() {
 
   const handleComplete = () => {
     console.log('Complete pressed, selected birthday:', selectedDate);
+    navigation.navigate('OnboardingComplete');
     // TODO: 여기에 생일 정보 전송 로직 추가
   };
 

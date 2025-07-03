@@ -6,11 +6,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import Fonts from '../constants/fonts';
 import Colors from '../constants/colors';
 
 const DEFAULT_CHARACTER_IMAGE = require('../assets/images/Wisker.png');
 
+import PrimaryButton from '../components/PrimaryButton';
 import StepIndicator from '../components/StepIndicator';
 import GuidelineOverlay from '../components/GuidelineOverlay';
 import InstructionText from '../components/InstructionText';
@@ -98,6 +100,7 @@ const STEP_DETAILS = {
 };
 
 export default function CameraCaptureScreen() {
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [facing, setFacing] = useState('back');
   const [flash, setFlash] = useState('off');
@@ -110,18 +113,11 @@ export default function CameraCaptureScreen() {
   });
   const cameraRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
+  const isFocused = useIsFocused();
   
   // 촬영 중 상태 관리
   const [isCapturing, setIsCapturing] = useState(false);
   const isCapturingRef = useRef(false);
-
-  useEffect(() => {
-    (async () => {
-      if (!permission || !permission.canAskAgain || permission.granted) return;
-      const { status } = await requestPermission();
-      if (status !== 'granted') Alert.alert('Permission Denied', 'Camera permission is required.');
-    })();
-  }, [permission, requestPermission]);
 
   const handleMainButtonPress = async () => {
     if (isCapturingRef.current) {
@@ -147,10 +143,7 @@ export default function CameraCaptureScreen() {
       // REVIEW 단계: OK 버튼 누르면 완료
       if (currentStep === CAPTURE_STEPS.REVIEW) {
         console.log('Review complete:', capturedImages);
-        if (currentStepInfo.nextStep) {
-          setCurrentStep(currentStepInfo.nextStep);
-        }
-        return;
+        navigation.navigate('GenWaiting');
       }
 
       // DONE 단계: 처음으로 돌아가기
@@ -221,21 +214,25 @@ export default function CameraCaptureScreen() {
     setCurrentStep(CAPTURE_STEPS.READY);
   };
 
-  if (!permission)
+  if (!permission || !isFocused)
+    return (
+      <View style={styles.centered} />
+    );
+  if (!permission.granted){
     return (
       <View style={styles.centered}>
-        <Text style={{ fontFamily: Fonts.suitBold }}>Requesting permission...</Text>
+        <Text style={styles.permissionText}>
+          To take photos, you need to allow camera access.
+        </Text>
+        <PrimaryButton
+          onPress={requestPermission}
+          textColor={Colors.wispyTextBlue}
+        >
+          Allow Camera
+        </PrimaryButton>
       </View>
     );
-  if (!permission.granted)
-    return (
-      <View style={styles.centered}>
-        <Text style={{ fontFamily: Fonts.suitBold }}>No camera access.</Text>
-        <TouchableOpacity onPress={requestPermission} style={styles.utilityButton}>
-          <Text style={styles.utilityButtonText}>Grant</Text>
-        </TouchableOpacity>
-      </View>
-    );
+  }
 
   const currentStepInfo = STEP_DETAILS[currentStep];
 
@@ -392,7 +389,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: Colors.wispyWhite
+    backgroundColor: Colors.wispyBlack
   },
   cameraAreaContainer: { flex: 1, position: 'relative' },
   camera: { ...StyleSheet.absoluteFillObject },
@@ -498,5 +495,12 @@ const styles = StyleSheet.create({
   },
   okButton: {
     backgroundColor: Colors.wispyButtonYellow,
+  },
+  permissionText: {
+    fontFamily: Fonts.suitHeavy,
+    color: Colors.wispyWhite,
+    fontSize: normalize(18),
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });

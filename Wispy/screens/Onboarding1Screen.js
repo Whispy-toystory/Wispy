@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 import PrimaryButton from '../components/PrimaryButton';
 import Colors from '../constants/colors';
@@ -19,6 +20,8 @@ import WispyLogo from '../assets/images/logo2.png';
 const screenHeight = Dimensions.get('window').height;
 
 function Onboarding1Screen() {
+  const navigation = useNavigation();
+
   return (
     <LinearGradient
       colors={[Colors.wispyPink, Colors.wispyBlue]}
@@ -48,7 +51,10 @@ function Onboarding1Screen() {
 
         <View style={styles.inputContainer}>
           <PrimaryButton
-            onPress={() => console.log('Next pressed')}
+            onPress={() => {
+              console.log('Next pressed')
+              navigation.navigate('Onboarding2');
+            }}
             textColor={Colors.wispyBlue}
           >
             Next

@@ -121,6 +121,7 @@ export default function DiaryScreen() {
   const [isTextInputModalVisible, setTextInputModalVisible] = useState(false);
   const initialDate = new Date().toISOString().split('T')[0];
   const [currentMonth, setCurrentMonth] = useState(initialDate);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // 애니메이션을 위한 Animated.Value 생성
   const viewAnim = useRef(new Animated.Value(0)).current;
@@ -148,23 +149,34 @@ export default function DiaryScreen() {
   
   // 날짜 선택 시 애니메이션 실행
   const onDayPress = (day) => {
+    if (isAnimating) return;
+
     setSelectedDate(day.dateString);
+    setIsAnimating(true);
+
     Animated.spring(viewAnim, {
       toValue: 1,
       tension: 40,
       friction: 8,
       useNativeDriver: true,
-    }).start();
+    }).start(() => setIsAnimating(false));
   };
 
   // 뒤로가기 시 애니메이션 실행
   const handleBack = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+
     Animated.spring(viewAnim, {
       toValue: 0,
       tension: 40,
       friction: 8,
       useNativeDriver: true,
-    }).start(() => setSelectedDate(null));
+    }).start(() => {
+      setSelectedDate(null);
+      setIsAnimating(false);
+    });
   };
 
   // 삭제 확인 모달 핸들러
@@ -181,7 +193,7 @@ export default function DiaryScreen() {
 
   // 홈, 플레이, 삭제 버튼 핸들러
   const onHomePress = () => navigation.navigate('ProfileSelection');
-  const onPlayPress = () => navigation.navigate('ChatScreen');
+  const onPlayPress = () => navigation.navigate('Chat');
   const onDeletePress = () => setDeleteModalVisible(true);
   
   // 메뉴 아이템 정의

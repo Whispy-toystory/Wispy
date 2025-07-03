@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";
@@ -9,6 +11,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const screenHeight = Dimensions.get('window').height;
 
 function WelcomeScreen() {
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        // 3초(3000ms) 후에 코드를 실행합니다.
+        const timer = setTimeout(() => {
+            navigation.navigate('Onboarding1'); 
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [navigation]);
+    
     return (
         <LinearGradient
             colors={[Colors.wispyPink, Colors.wispyBlue]}
@@ -43,7 +56,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     
-     safeArea: {
+      safeArea: {
         flex: 1,
     },
 

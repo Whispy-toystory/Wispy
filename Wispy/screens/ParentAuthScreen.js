@@ -81,7 +81,7 @@ export default function ParentAuthScreen({ navigation }) {
     };
 
     handlePinComplete();
-  }, [pin, stage, firstPin, navigation]);
+  }, [pin]);
 
   const handleKeyPress = (num) => {
     if (error) setError('');
