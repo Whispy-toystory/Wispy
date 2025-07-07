@@ -1,5 +1,5 @@
 // PlayContent.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CharacterModel } from './CharacterModel';
 import { GrassModel } from './GrassModel';
 import { Skybox } from './Skybox';
@@ -34,4 +34,16 @@ export function PlayContent({ isAnimated }) {
       />
     </>
   );
+}
+
+// 로딩 완료 콜백을 위한 Wrapper 컴포넌트
+export function PlayContentWithCallback({ onLoaded, ...props }) {
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+        if(onLoaded) onLoaded();
+    });
+    return () => cancelAnimationFrame(handle);
+  }, [onLoaded]);
+
+  return <PlayContent {...props} />;
 }

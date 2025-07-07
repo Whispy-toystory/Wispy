@@ -9,6 +9,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useOnboarding } from '../contexts/OnboardingContext';
 
 import PrimaryButton from '../components/PrimaryButton';
 import Colors from '../constants/colors';
@@ -21,6 +22,7 @@ const screenHeight = Dimensions.get('window').height;
 
 function Onboarding3Screen() {
   const navigation = useNavigation();
+  const { onboardingData } = useOnboarding();
 
   const name = 'Robin';
 
@@ -48,7 +50,7 @@ function Onboarding3Screen() {
 
         <View style={styles.textContainer}>
           <Text style={styles.greetingText}>
-            Hi <Text style={styles.nameText}>{name}</Text>
+            Hi <Text style={styles.nameText}>{onboardingData.nickname}</Text>
           </Text>
           <Text style={styles.middleText}>
             What an <Text style={styles.highlightText}>awesome name!</Text>
@@ -111,23 +113,28 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.suitHeavy,
     color: 'white',
     marginBottom: 8,
+    lineHeight: 24,
   },
   nameText: {
-    color: Colors.wispyDarkerPink,
+    color: Colors.wispyYellow,
+    lineHeight: 24,
   },
   middleText: {
     fontSize: 22,
     fontFamily: Fonts.suitHeavy,
     color: 'white',
+    lineHeight: 24,
   },
   highlightText: {
-    color: Colors.wispyOrange,
+    color: Colors.wispyTextBlue,
+    lineHeight: 24,
   },
   thankYouText: {
     fontSize: 22,
     fontFamily: Fonts.suitHeavy,
     color: 'white',
     marginTop: 8,
+    lineHeight: 24,
   },
   imageContainer: {
     marginTop: 10,

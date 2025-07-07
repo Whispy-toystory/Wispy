@@ -31,5 +31,3 @@ export function CharacterModel({ isAnimated = false, ...props }) {
 
   return <primitive ref={modelRef} object={scene} {...props} />;
 }
-
-useGLTF.preload(modelPath);

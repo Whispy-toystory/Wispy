@@ -30,6 +30,9 @@ import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import TextInputConfirmModal from '../components/TextInputConfirmModal';
 import SlidingMenu from '../components/SlidingMenu';
 
+import { useAzureSpeech } from '../components/useAzureSpeech';
+import { useExpoVoice } from '../components/useExpoVoice';
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const designScreenWidth = 375;
@@ -63,7 +66,10 @@ const ChatUI = memo(({
     inputText,
     setInputText,
     handleSendMessage,
-    scrollViewRef
+    scrollViewRef,
+    isRecognizing,
+    startRecognizing,
+    stopRecognizing
     }) => {
     console.log("✅ ChatUI is rendering. (This is OK)");
 
@@ -101,21 +107,43 @@ const ChatUI = memo(({
                 inputText={inputText}
                 setInputText={setInputText}
                 handleSendMessage={handleSendMessage}
+                isRecognizing={isRecognizing}
+                startRecognizing={startRecognizing}
+                stopRecognizing={stopRecognizing}
             />
         </KeyboardAvoidingView>
         </>
     );
 });
 
-const ChatInputArea = memo(({ inputText, setInputText, handleSendMessage }) => {
+const ChatInputArea = memo(({ 
+  inputText, 
+  setInputText, 
+  handleSendMessage,
+  isRecognizing,
+  startRecognizing,
+  stopRecognizing 
+}) => {
+  const scaleValue = useRef(new Animated.Value(1)).current;
   console.log("ChatInputArea is rendering!"); // 이 로그가 메시지 전송 시 나타나지 않아야 합니다.
+  
+  // 길게 누를 때와 뗄 때의 동작 정의
+  const handlePressIn = () => {
+    startRecognizing();
+    Animated.spring(scaleValue, { toValue: 0.8, useNativeDriver: true }).start();
+  };
+
+  const handlePressOut = () => {
+    stopRecognizing();
+    Animated.spring(scaleValue, { toValue: 1, useNativeDriver: true }).start();
+  };
 
   return (
     <View style={styles.inputAreaWrapper}>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Type your message here..."
+          placeholder={isRecognizing ? "Listening..." : "Type or hold to speak"}
           value={inputText}
           onChangeText={setInputText}
           returnKeyType="send"
@@ -124,15 +152,20 @@ const ChatInputArea = memo(({ inputText, setInputText, handleSendMessage }) => {
         />
       </View>
 
-      <TouchableOpacity
+      {/* 3. Pressable로 버튼을 감싸고 동작 연결 */}
+      <Pressable
         style={styles.flowerButtonContainer}
-        onPress={() => handleSendMessage(inputText)}
+        onPress={() => handleSendMessage(inputText)} // 짧게 누르면 기존처럼 메시지 전송
+        onLongPress={handlePressIn} // 길게 누르기 시작
+        onPressOut={handlePressOut} // 길게 누르다 뗌
       >
-        <Image
-          source={require('../assets/images/talking_flower.png')}
-          style={styles.flowerIcon}
-        />
-      </TouchableOpacity>
+        <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+          <Image
+            source={require('../assets/images/talking_flower.png')}
+            style={styles.flowerIcon}
+          />
+        </Animated.View>
+      </Pressable>
     </View>
   );
 });
@@ -151,6 +184,21 @@ function ChatScreen() {
   const [isMoreMenuVisible, setMoreMenuVisible] = useState(false);
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isTextInputModalVisible, setTextInputModalVisible] = useState(false);
+
+  // 음성 인식 훅 사용
+  const { 
+    recognizedText, 
+    isRecognizing, 
+    startRecognizing, 
+    stopRecognizing 
+  } = useAzureSpeech();
+
+  useEffect(() => {
+    if (recognizedText) {
+      setInputText(recognizedText);
+    }
+  }, [recognizedText]);
+  
 
   const scrollViewRef = useRef(null);
 
@@ -233,6 +281,9 @@ function ChatScreen() {
           inputText={inputText}
           setInputText={setInputText}
           handleSendMessage={handleSendMessage}
+          isRecognizing={isRecognizing}
+          startRecognizing={startRecognizing}
+          stopRecognizing={stopRecognizing}
         />
         <SlidingMenu
           isVisible={isMoreMenuVisible}
@@ -349,23 +400,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
-    height: 52,
+    height: 50,
   },
   inputContainer: {
     flex: 1,
     backgroundColor: 'white',
     borderRadius: 30,
-    paddingLeft: 20,
+    paddingLeft: 30,
     paddingRight: 60,
     height: '100%',
     justifyContent: 'center',
   },
   input: {
-    fontSize: 16,
+    fontSize: 20,
   },
   flowerIcon: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     resizeMode: 'contain',
   },
 });

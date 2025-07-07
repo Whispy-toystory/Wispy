@@ -17,5 +17,3 @@ export default function Flower3DModel(props) {
     </Suspense>
   );
 }
-
-useGLTF.preload(modelPath);

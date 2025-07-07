@@ -9,6 +9,7 @@ import Wisker from '../components/Wisker';
 import PrimaryButton from "../components/PrimaryButton";
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useOnboarding } from '../contexts/OnboardingContext';
 
 // utils/normalizeText.js
 // import { Dimensions, Platform, PixelRatio } from 'react-native';
@@ -31,9 +32,8 @@ export function normalize(size) {
 }
 
 
-function IntroGenScreen({ route }) {
-  const userName = route && route.params ? route.params.userName || 'Guest' : 'Guest'; 
-  // 예시로 하드코딩된 사용자 이름입니다. 실제로는 props나 전역 상태에서 가져와야 합니다.
+function IntroGenScreen() {
+  const { onboardingData } = useOnboarding();
   const [APIuserName, setUserName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -56,7 +56,7 @@ function IntroGenScreen({ route }) {
         <View style={styles.contentContainer}>
           <View style={styles.textcontainer}>
             <Text style={styles.mainText}>
-              Ah, so you are <Text style={{fontWeight: 'bold', color: Colors.wispyYellow}}>{userName}</Text>!{'\n'}
+              Ah, so you are <Text style={{fontWeight: 'bold', color: Colors.wispyYellow}}>{onboardingData.nickname}</Text>!{'\n'}
               I can create your very own {'\n'}
               <Text style={{color:Colors.wispyOrange}}>special guardian</Text> friend, {'\n'}
               but <Text style={{color:Colors.wispyRed}}>only once</Text> by magic! 

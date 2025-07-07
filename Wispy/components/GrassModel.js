@@ -41,6 +41,3 @@ export function GrassModel(props) {
     </mesh>
   );
 }
-
-useGLTF.preload(modelPath);
-useTexture.preload(texturePaths);

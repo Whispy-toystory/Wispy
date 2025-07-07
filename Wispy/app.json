@@ -22,7 +22,8 @@
       "package": "com.anonymous.Wispy",
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.INTERNET"
       ]
     },
     "web": {
@@ -35,7 +36,8 @@
       "expo-asset",
       "expo-video",
       "react-native-video",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-speech-recognition"
     ]
   }
 }

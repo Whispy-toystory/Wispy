@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 
+import { useOnboarding } from '../contexts/OnboardingContext';
 import PrimaryButton from '../components/PrimaryButton';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
@@ -27,6 +28,7 @@ function Onboarding2Screen() {
   const [isValid, setIsValid] = useState(false);
   const [touched, setTouched] = useState(false);
   const navigation = useNavigation();
+  const { updateOnboardingData } = useOnboarding();
 
 
   useEffect(() => {
@@ -36,6 +38,7 @@ function Onboarding2Screen() {
 
   const handleComplete = () => {
     console.log('Complete pressed with nickname:', nickname);
+    updateOnboardingData({ nickname: nickname });
     navigation.navigate('Onboarding3');
   };
 

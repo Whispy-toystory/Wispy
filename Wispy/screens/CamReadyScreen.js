@@ -1,15 +1,19 @@
 // screens/CamReadyScreen.js
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, AppState, Platform } from 'react-native';
-import { useCameraPermissions } from 'expo-camera';
+import { View, Text, StyleSheet, AppState, Platform, Dimensions, PixelRatio, Image } from 'react-native';
+import { useCameraPermissions, PermissionStatus } from 'expo-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import PrimaryButton from '../components/PrimaryButton';
+import Wisker from '../components/Wisker';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 
-import { Dimensions, PixelRatio } from 'react-native';
-const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
+// --- Assets ---
+const cameraImg = require('../assets/images/Camera.png');
+
+// --- Utils ---
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const designScreenWidth = 375;
 const scale = SCREEN_WIDTH / designScreenWidth;
@@ -25,19 +29,18 @@ function CamReadyScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const appState = useRef(AppState.currentState);
 
+  // 사용자가 앱 설정에서 권한을 변경하고 돌아왔을 때를 처리하는 로직
   useEffect(() => {
-    // AppState의 변경을 감지하는 리스너를 설정합니다.
     const subscription = AppState.addEventListener('change', async (nextAppState) => {
-      // 앱이 비활성 상태였다가 다시 활성 상태로 돌아왔고, 현재 화면이 포커스 상태일 때
       if (
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active' &&
         isFocused
       ) {
         console.log('App has come to the foreground, re-checking permissions.');
-        // 권한 상태를 다시 한번 가져옵니다.
-        const freshPermissions = await requestPermission();
-        if (freshPermissions.granted) {
+        // 상태를 다시 확인하기 위해 현재 권한 상태를 가져옵니다.
+        const { status } = await useCameraPermissions.getPermissionsAsync()
+        if (status === PermissionStatus.GRANTED) {
           console.log('Permission granted after returning to app. Navigating...');
           navigation.replace('Camera');
         }
@@ -45,59 +48,90 @@ function CamReadyScreen() {
       appState.current = nextAppState;
     });
 
-    // 컴포넌트가 사라질 때 리스너를 정리합니다.
     return () => {
       subscription.remove();
     };
-  }, [isFocused, navigation, requestPermission]); // isFocused가 바뀔 때마다 리스너를 재설정할 수 있도록 추가
+  }, [isFocused, navigation]);
 
-  // 권한이 이미 승인된 상태로 이 화면에 진입한 경우
+  // 화면에 진입했을 때 권한이 이미 승인된 경우 바로 이동
   useEffect(() => {
     if (isFocused && permission?.granted) {
       navigation.replace('Camera');
     }
   }, [isFocused, permission, navigation]);
 
-  // 권한이 아직 결정되지 않았거나, 포커스되지 않았을 때
+  // 권한 상태가 로딩 중일 때 빈 화면 표시
   if (!permission || !isFocused) {
-    return <View style={styles.centered} />;
+    return <View style={styles.backgroundContainer} />;
   }
 
-  // 권한 요청 UI
-  if (!permission.granted) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.permissionText}>
-          To take photos, you need to allow camera access.
-        </Text>
-        <PrimaryButton
-          onPress={requestPermission} // 버튼 클릭 시 권한 요청
-          backgroundColor={Colors.wispyButtonYellow}
-          textColor={Colors.wispyTextBlue}
-        >
-          Allow Camera
-        </PrimaryButton>
-      </View>
-    );
-  }
-  
-  return <View style={styles.centered} />;
+  // 권한이 거부된 경우, 사용자에게 요청하는 UI를 표시
+  return (
+    <View style={styles.backgroundContainer}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.headerContainer} />
+
+        <View style={styles.contentContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.mainText}>
+              I need to see it{'\n'}
+              through my <Text style={{ color: Colors.wispyYellow }}>magic lens</Text>!
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.characterImageContainer}>
+          <Wisker source={cameraImg} />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <PrimaryButton
+            onPress={requestPermission} // 버튼 클릭 시 권한 요청
+            textColor={Colors.wispyRed}
+          >
+            Turn on camera
+          </PrimaryButton>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  centered: {
+  backgroundContainer: {
+    flex: 1,
+    backgroundColor: Colors.wispyBlack,
+  },
+  safeArea: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  headerContainer: {
+    height: 50, // 헤더 공간 확보
+  },
+  contentContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: Colors.wispyBlack
   },
-  permissionText: {
-    fontFamily: Fonts.suitHeavy,
-    color: Colors.wispyWhite,
-    fontSize: normalize(18),
+  textContainer: {
+    alignItems: 'center',
+  },
+  mainText: {
     textAlign: 'center',
-    marginBottom: 20,
+    color: Colors.wispyWhite,
+    fontSize: normalize(25),
+    lineHeight: normalize(40),
+    fontFamily: Fonts.suitHeavy,
+  },
+  characterImageContainer: {
+    flex: 1.2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputContainer: {
+    paddingTop: 10,
+    paddingBottom: 20,
+    paddingHorizontal: 24,
   },
 });
 

@@ -10,6 +10,7 @@ import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
 import * as THREE from 'three';
 import { useNavigation } from '@react-navigation/native';
+import { useOnboarding } from '../contexts/OnboardingContext';
 
 import { PlayContent } from '../components/PlayContent';
 
@@ -29,6 +30,7 @@ function PlayStartScreen() {
   const userName = 'User Name';
   const characterName = 'Character Name';
   const navigation = useNavigation();
+  const { onboardingData } = useOnboarding();
 
   // Confetti
   const [shoot, setShoot] = useState(false);
@@ -66,8 +68,8 @@ function PlayStartScreen() {
       <SafeAreaView style={styles.uiOverlay}>
         <View style={styles.textContainer}>
           <Text style={styles.mainText}>
-            Hi there, ({userName})!{'\n'}
-            I'm <Text style={{ color: Colors.wispyYellow }}>({characterName})</Text>,{'\n'}
+            Hi there, {onboardingData.nickname}!{'\n'}
+            I'm <Text style={{ color: Colors.wispyYellow }}>{onboardingData.GuardianName}</Text>,{'\n'}
             your very own magical{'\n'}
             <Text style={{ color: Colors.wispyOrange }}>guardian angel!</Text>{'\n'}
             I'm here just for you!{'\n'}
@@ -79,7 +81,7 @@ function PlayStartScreen() {
           <PrimaryButton
             onPress={() => {
               console.log('Play button pressed!');
-              navigation.navigate('Chat');
+              navigation.navigate('ChatLoading');
             }}
             backgroundColor={Colors.wispyButtonYellow}
             textColor={Colors.wispyRed}

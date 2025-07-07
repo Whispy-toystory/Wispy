@@ -25,7 +25,7 @@ export function normalize(size) {
 
 const guardianimg = require('../assets/images/angelguardian.png');
 
-const TOTAL_DURATION_SECONDS = 0.2 * 60;
+const TOTAL_DURATION_SECONDS = 0.1 * 60;
 const TIMER_END_TIME_STORAGE_KEY = 'genWaitingScreenTimerEndTime';
 
 function GenWaitingScreen({ navigation }) {
