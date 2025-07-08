@@ -56,7 +56,7 @@ function IntroGenScreen() {
         <View style={styles.contentContainer}>
           <View style={styles.textcontainer}>
             <Text style={styles.mainText}>
-              Ah, so you are <Text style={{fontWeight: 'bold', color: Colors.wispyYellow}}>{onboardingData.nickname}</Text>!{'\n'}
+              Ah, so you are <Text style={{fontWeight: 'bold', color: Colors.wispyYellow}}>{onboardingData.user_name}</Text>!{'\n'}
               I can create your very own {'\n'}
               <Text style={{color:Colors.wispyOrange}}>special guardian</Text> friend, {'\n'}
               but <Text style={{color:Colors.wispyRed}}>only once</Text> by magic! 

@@ -5,8 +5,8 @@ import AudioRecord from 'react-native-audio-record';
 import { Buffer } from 'buffer';
 
 // 아래 값들을 본인의 Azure Speech 서비스 정보로 교체하세요.
-const SPEECH_KEY = '4fc35a0b8a0244038f6c64b92dd54162';       // 본인의 Azure 키로 변경
-const SPEECH_REGION = 'southeastasia'; // 본인의 Azure 지역으로 변경
+const SPEECH_KEY = process.env.AZURE_SPEECH_KEY;       // 본인의 Azure 키로 변경
+const SPEECH_REGION = process.env.AZURE_SPEECH_REGION;; // 본인의 Azure 지역으로 변경
 
 export const useAzureSpeech = () => {
   const [recognizedText, setRecognizedText] = useState('');

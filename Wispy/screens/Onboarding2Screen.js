@@ -38,7 +38,7 @@ function Onboarding2Screen() {
 
   const handleComplete = () => {
     console.log('Complete pressed with nickname:', nickname);
-    updateOnboardingData({ nickname: nickname });
+    updateOnboardingData({ user_name: nickname });
     navigation.navigate('Onboarding3');
   };
 

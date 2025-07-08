@@ -50,7 +50,7 @@ function Onboarding3Screen() {
 
         <View style={styles.textContainer}>
           <Text style={styles.greetingText}>
-            Hi <Text style={styles.nameText}>{onboardingData.nickname}</Text>
+            Hi <Text style={styles.nameText}>{onboardingData.user_name}</Text>
           </Text>
           <Text style={styles.middleText}>
             What an <Text style={styles.highlightText}>awesome name!</Text>

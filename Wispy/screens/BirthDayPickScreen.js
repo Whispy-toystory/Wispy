@@ -48,7 +48,7 @@ function BirthDayPickScreen() {
   const handleComplete = () => {
     const birthdayString = moment(selectedDate).format('YYYY-MM-DD');
     console.log('Complete pressed, selected birthday:', birthdayString );
-    updateOnboardingData({ birthday: birthdayString  });
+    updateOnboardingData({ user_birth_date: birthdayString  });
     navigation.navigate('OnboardingComplete');
   };
 

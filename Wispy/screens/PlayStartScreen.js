@@ -68,8 +68,8 @@ function PlayStartScreen() {
       <SafeAreaView style={styles.uiOverlay}>
         <View style={styles.textContainer}>
           <Text style={styles.mainText}>
-            Hi there, {onboardingData.nickname}!{'\n'}
-            I'm <Text style={{ color: Colors.wispyYellow }}>{onboardingData.GuardianName}</Text>,{'\n'}
+            Hi there, {onboardingData.user_name}!{'\n'}
+            I'm <Text style={{ color: Colors.wispyYellow }}>{onboardingData.character_name}</Text>,{'\n'}
             your very own magical{'\n'}
             <Text style={{ color: Colors.wispyOrange }}>guardian angel!</Text>{'\n'}
             I'm here just for you!{'\n'}

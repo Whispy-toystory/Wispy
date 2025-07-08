@@ -17,8 +17,8 @@ import SubAppLogo from '../components/SubAppLogo';
 import Colors from "../constants/colors";
 import Fonts from '../constants/fonts';
 import { useNavigation } from '@react-navigation/native';
-import { useAzureSpeech } from '../components/useAzureSpeech';
-import { useExpoVoice } from '../components/useExpoVoice';
+import { useAzureSpeech } from '../hooks/useAzureSpeech';
+import { useExpoVoice } from '../hooks/useExpoVoice';
 import { useOnboarding } from '../contexts/OnboardingContext';
 
 // --- 화면 크기 정규화 함수 ---
@@ -121,7 +121,7 @@ function NameSpeakImageScreen({ navigation }) {
     if (now - lastPressTimeRef.current < RECORDING_COOLDOWN_MS || isUiLocked) return;
     if (callCount === MAX_CALLS && nameConfirmed) return;
 
-    if (!hasInteracted) setHasInteracted(true); // 첫 상호작용 기록
+    if (!hasInteracted) setHasInteracted(true);
 
     setIsUiLocked(true);
     setShowConfirmationPrompt(false);
@@ -136,7 +136,7 @@ function NameSpeakImageScreen({ navigation }) {
     if (!isUiLocked) return;
     if (callCount === MAX_CALLS && nameConfirmed) return;
     
-    setFeedbackText('Got it! Thinking...'); // <<< 이 텍스트가 이제 제대로 표시됩니다.
+    setFeedbackText('Got it! Thinking...');
     await stopRecognizing();
     
     setIsUiLocked(false);
@@ -150,7 +150,7 @@ function NameSpeakImageScreen({ navigation }) {
       setGuardianName(newGuardianName);
       setNameConfirmed(true);
       setCallCount(0);
-      updateOnboardingData({ GuardianName: newGuardianName }); 
+      updateOnboardingData({ character_name: newGuardianName }); 
 
     } else {
       setFeedbackText('Okay, let\'s try that again. Press and hold the flower to say the name.');

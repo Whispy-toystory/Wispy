@@ -30,8 +30,8 @@ import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import TextInputConfirmModal from '../components/TextInputConfirmModal';
 import SlidingMenu from '../components/SlidingMenu';
 
-import { useAzureSpeech } from '../components/useAzureSpeech';
-import { useExpoVoice } from '../components/useExpoVoice';
+import { useAzureSpeech } from '../hooks/useAzureSpeech';
+import { useExpoVoice } from '../hooks/useExpoVoice';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
